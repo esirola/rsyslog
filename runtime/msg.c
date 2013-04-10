@@ -2209,10 +2209,13 @@ void MsgSetInputName(msg_t *pThis, prop_t *inputName)
 {
 	assert(pThis != NULL);
 
+dbgprintf("DDDD: prop.AddRef %p\n", prop.AddRef);
 	prop.AddRef(inputName);
+dbgprintf("DDDD: done prop.AddRef %p\n", prop.AddRef);
 	if(pThis->pInputName != NULL)
 		prop.Destruct(&pThis->pInputName);
 	pThis->pInputName = inputName;
+dbgprintf("DDDD: exit MsgSetInputName\n");
 }
 
 
