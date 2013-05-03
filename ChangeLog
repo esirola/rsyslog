@@ -1,3 +1,10 @@
+- bugfix: segfault due to invalid dynafile cache handling
+  Accidently, the old-style cache size parameter was used when the
+  dynafile cache was created in a RainerScript action. If the old-style
+  size was lower than the one actually set, this lead to misadressing
+  when the size was overrun, and that could lead to all kinds of
+  "interesting things", often in segfaults.
+  closes: http://bugzilla.adiscon.com/show_bug.cgi?id=440
 - omrelp: added support for RainerScript-based configuration
 - omrelp: added ability to specify session timeout
 ----------------------------------------------------------------------------
