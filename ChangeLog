@@ -1,4 +1,7 @@
 ---------------------------------------------------------------------------
+Version 5.8.13.c1.3  [custom build] 2013-05-13
+- backported 8700672c769084dea7d85158f497e3b9a9942c12
+---------------------------------------------------------------------------
 Version 5.8.13.c1.2  [custom build] 2012-11-05
 - bugfix: dynafile zip files could be corrupted
   This could happen if a dynafile was destructed before the first write.
