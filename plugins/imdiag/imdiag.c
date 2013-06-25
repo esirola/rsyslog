@@ -199,7 +199,7 @@ static rsRetVal
 doInjectMsg(int iNum)
 {
 	uchar szMsg[1024];
-	msg_t *pMsg;
+	msg_tt *pMsg;
 	struct syslogTime stTime;
 	time_t ttGenTime;
 	DEFiRet;

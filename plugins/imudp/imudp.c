@@ -304,7 +304,7 @@ processSocket(thrdInfo_t *pThrd, int fd, struct sockaddr_storage *frominetPrev, 
 	socklen_t socklen;
 	ssize_t lenRcvBuf;
 	struct sockaddr_storage frominet;
-	msg_t *pMsg;
+	msg_tt *pMsg;
 	prop_t *propFromHost = NULL;
 	prop_t *propFromHostIP = NULL;
 	char errStr[1024];

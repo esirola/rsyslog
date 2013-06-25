@@ -96,7 +96,7 @@ listRootChanged(void)
 	if(apcListRoot == NULL)
 		FINALIZE;
 
-	// TODO: implement!
+	// TODO: implement!  
 
 finalize_it:
 	RETiRet;

@@ -286,5 +286,4 @@ BEGINObjClassInit(nsdpoll_ptcp, 1, OBJ_IS_CORE_MODULE) /* class, version */
 ENDObjClassInit(nsdpoll_ptcp)
 #endif /* #ifdef HAVE_EPOLL_CREATE this module requires epoll! */
 
-/* vi:set ai:
- */
+/* vi:set ai: */

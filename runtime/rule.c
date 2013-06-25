@@ -110,7 +110,7 @@ DEFFUNC_llExecFunc(processBatchDoActions)
  * provided filter condition.
  */
 static rsRetVal
-shouldProcessThisMessage(rule_t *pRule, msg_t *pMsg, sbool *bProcessMsg)
+shouldProcessThisMessage(rule_t *pRule, msg_tt *pMsg, sbool *bProcessMsg)
 {
 	DEFiRet;
 	unsigned short pbMustBeFreed;
@@ -274,7 +274,7 @@ processBatch(rule_t *pThis, batch_t *pBatch)
 
 	/* first check the filters and reset status variables */
 	for(i = 0 ; i < batchNumMsgs(pBatch) && !*(pBatch->pbShutdownImmediate) ; ++i) {
-		localRet = shouldProcessThisMessage(pThis, (msg_t*)(pBatch->pElem[i].pUsrp),
+		localRet = shouldProcessThisMessage(pThis, (msg_tt*)(pBatch->pElem[i].pUsrp),
 						    &(pBatch->pElem[i].bFilterOK));
 		if(localRet != RS_RET_OK) {
 			DBGPRINTF("processBatch: iRet %d returned from shouldProcessThisMessage, "

@@ -135,7 +135,7 @@ onRegularClose(strms_sess_t *pSess)
 	assert(pSess != NULL);
 
 	/* process any incomplete frames left over */
-	//strms_sess.PrepareClose(pSess);
+	//strms_sess.PrepareClose(pSess); 
 	/* Session closed */
 	strms_sess.Close(pSess);
 	RETiRet;
@@ -509,7 +509,10 @@ RunCancelCleanup(void *arg)
 
 
 /* This function is called to gather input. */
-#pragma GCC diagnostic ignored "-Wempty-body"
+/*  AIXPORT : gcc pragma ignored */
+#ifndef _AIX
+	#pragma GCC diagnostic ignored "-Wempty-body"
+#endif
 static rsRetVal
 Run(strmsrv_t *pThis)
 {
@@ -619,7 +622,10 @@ finalize_it: /* this is a very special case - this time only we do not exit the 
 
 	RETiRet;
 }
-#pragma GCC diagnostic warning "-Wempty-body"
+/*  AIXPORT : gcc pragma ignored */
+#ifndef _AIX
+	#pragma GCC diagnostic ignored "-Wempty-body"
+#endif
 
 
 /* Standard-Constructor */
@@ -634,6 +640,7 @@ BEGINobjConstruct(strmsrv) /* be sure to specify the object type also in END mac
 	/* session specific callbacks */
 	//pThis->OnSessConstructFinalize =
 	//pThis->pOnSessDestruct =
+
 ENDobjConstruct(strmsrv)
 
 
@@ -651,7 +658,7 @@ strmsrvConstructFinalize(strmsrv_t *pThis)
 		CHKiRet(netstrms.SetDrvrAuthMode(pThis->pNS, pThis->pszDrvrAuthMode));
 	if(pThis->pPermPeers != NULL)
 		CHKiRet(netstrms.SetDrvrPermPeers(pThis->pNS, pThis->pPermPeers));
-	// TODO: set driver!
+	// TODO: set driver! 
 	CHKiRet(netstrms.ConstructFinalize(pThis->pNS));
 
 	/* set up listeners */

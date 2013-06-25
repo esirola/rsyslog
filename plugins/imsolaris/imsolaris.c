@@ -177,7 +177,7 @@ readLog(int fd, uchar *pRcv, int iMaxLine)
 	struct strbuf ctl;
 	struct log_ctl hdr;
 	int flags;
-	msg_t *pMsg;
+	msg_tt *pMsg;
 	int ret;
 	char errStr[1024];
 

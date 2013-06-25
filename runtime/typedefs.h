@@ -41,7 +41,7 @@ typedef struct thrdInfo thrdInfo_t;
 typedef struct obj_s obj_t;
 typedef struct ruleset_s ruleset_t;
 typedef struct rule_s rule_t;
-//typedef struct filed selector_t;/* TODO: this so far resides in syslogd.c, think about modularization */
+/* typedef struct filed selector_t; */ // TODO: this so far resides in syslogd.c, think about modularization 
 typedef struct NetAddr netAddr_t;
 typedef struct netstrms_s netstrms_t;
 typedef struct netstrm_s netstrm_t;
@@ -56,7 +56,7 @@ typedef struct nsdsel_ptcp_s nsdsel_ptcp_t;
 typedef struct nsdsel_gtls_s nsdsel_gtls_t;
 typedef struct nsdpoll_ptcp_s nsdpoll_ptcp_t;
 typedef struct wti_s wti_t;
-typedef struct msg msg_t;
+typedef struct msg msg_tt;
 typedef struct queue_s qqueue_t;
 typedef struct prop_s prop_t;
 typedef struct interface_s interface_t;
@@ -82,8 +82,8 @@ typedef struct statsobj_s statsobj_t;
 typedef rsRetVal (*prsf_t)(struct vmstk_s*, int);	/* pointer to a RainerScript function */
 typedef uint64 qDeqID;	/* queue Dequeue order ID. 32 bits is considered dangerously few */
 
-typedef struct tcpLstnPortList_s tcpLstnPortList_t; // TODO: rename?
-typedef struct strmLstnPortList_s strmLstnPortList_t; // TODO: rename?
+typedef struct tcpLstnPortList_s tcpLstnPortList_t; // TODO: rename? 
+typedef struct strmLstnPortList_s strmLstnPortList_t; // TODO: rename? 
 
 /* under Solaris (actually only SPARC), we need to redefine some types
  * to be void, so that we get void* pointers. Otherwise, we will see
@@ -140,7 +140,7 @@ typedef struct multi_submit_s multi_submit_t;
 struct multi_submit_s {
 	short	maxElem;	/* maximum number of Elements */
 	short	nElem;		/* current number of Elements, points to the next one FREE */
-	msg_t	**ppMsgs;
+	msg_tt	**ppMsgs;
 };
 
 #endif /* multi-include protection */

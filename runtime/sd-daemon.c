@@ -32,7 +32,8 @@
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <sys/un.h>
-#include <sys/fcntl.h>
+/*  AIXPORT : correct the path of fcntl.h */
+#include <fcntl.h>
 #include <netinet/in.h>
 #include <stdlib.h>
 #include <errno.h>

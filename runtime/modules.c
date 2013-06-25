@@ -452,7 +452,8 @@ doModInit(rsRetVal (*modInit)(int, int*, rsRetVal(**)(), rsRetVal(*)(), modInfo_
 	CHKiRet((*pNew->modQueryEtryPt)((uchar*)"modExit", &pNew->modExit));
 	localRet = (*pNew->modQueryEtryPt)((uchar*)"isCompatibleWithFeature", &pNew->isCompatibleWithFeature);
 	if(localRet == RS_RET_MODULE_ENTRY_POINT_NOT_FOUND)
-		pNew->isCompatibleWithFeature = dummyIsCompatibleWithFeature;
+/* AIXPORT : typecaste the return type for AIX */
+		pNew->isCompatibleWithFeature = (rsRetVal(*)(syslogFeature)) dummyIsCompatibleWithFeature;
 	else if(localRet != RS_RET_OK)
 		ABORT_FINALIZE(localRet);
 
@@ -477,13 +478,15 @@ doModInit(rsRetVal (*modInit)(int, int*, rsRetVal(**)(), rsRetVal(*)(), modInfo_
 
 			localRet = (*pNew->modQueryEtryPt)((uchar*)"beginTransaction", &pNew->mod.om.beginTransaction);
 			if(localRet == RS_RET_MODULE_ENTRY_POINT_NOT_FOUND)
-				pNew->mod.om.beginTransaction = dummyBeginTransaction;
+/* AIXPORT : typecaste the return type for AIX */
+				pNew->mod.om.beginTransaction = (rsRetVal(*)(void*))dummyBeginTransaction;
 			else if(localRet != RS_RET_OK)
 				ABORT_FINALIZE(localRet);
 
 			localRet = (*pNew->modQueryEtryPt)((uchar*)"endTransaction", &pNew->mod.om.endTransaction);
 			if(localRet == RS_RET_MODULE_ENTRY_POINT_NOT_FOUND) {
-				pNew->mod.om.endTransaction = dummyEndTransaction;
+/* AIXPORT : typecaste the return type for AIX */
+				pNew->mod.om.endTransaction = (rsRetVal(*)(void*))dummyEndTransaction;
 			} else if(localRet != RS_RET_OK) {
 				ABORT_FINALIZE(localRet);
 			}
@@ -623,11 +626,13 @@ static void modPrintList(void)
 			dbgprintf("\tparseSelectorAct:   0x%lx\n", (unsigned long) pMod->mod.om.parseSelectorAct);
 			dbgprintf("\ttryResume:          0x%lx\n", (unsigned long) pMod->tryResume);
 			dbgprintf("\tdoHUP:              0x%lx\n", (unsigned long) pMod->doHUP);
+/* AIXPORT : typecaste the return type in AIX  */
 			dbgprintf("\tBeginTransaction:   0x%lx\n", (unsigned long)
-								   ((pMod->mod.om.beginTransaction == dummyBeginTransaction) ?
+								   ((pMod->mod.om.beginTransaction == (rsRetVal(*)(void*))dummyBeginTransaction) ?
 								    0 :  pMod->mod.om.beginTransaction));
+/* AIXPORT : typecaste the return type in AIX  */
 			dbgprintf("\tEndTransaction:     0x%lx\n", (unsigned long)
-								   ((pMod->mod.om.endTransaction == dummyEndTransaction) ?
+								   ((pMod->mod.om.endTransaction == (rsRetVal(*)(void*))dummyEndTransaction) ?
 								    0 :  pMod->mod.om.endTransaction));
 			break;
 		case eMOD_IN:
@@ -853,8 +858,8 @@ Load(uchar *pModName)
 			 * algo over time... -- rgerhards, 2008-03-05
 			 */
 			/* ... so now add the extension */
-			strncat((char *) szPath, ".so", sizeof(szPath) - strlen((char*) szPath) - 1);
-			iPathLen += 3;
+			strncat((char *) szPath, ".so", sizeof(szPath) - strlen((char*) szPath) - 1); 
+			iPathLen += 3; 
 		}
 
 		if(iPathLen + strlen((char*) pModName) >= sizeof(szPath)) {
@@ -875,7 +880,7 @@ Load(uchar *pModName)
 
 		/* not found, try to dynamically link it */
 		if (!pModHdlr) {
-			pModHdlr = dlopen((char *) szPath, RTLD_NOW);
+			pModHdlr = dlopen((char *) szPath, RTLD_NOW); 
 		}
 
 		iLoadCnt++;
@@ -896,7 +901,8 @@ Load(uchar *pModName)
 		dlclose(pModHdlr);
 		ABORT_FINALIZE(RS_RET_MODULE_LOAD_ERR_NO_INIT);
 	}
-	if((iRet = doModInit(pModInit, (uchar*) pModName, pModHdlr)) != RS_RET_OK) {
+/*  AIXPORT : typecaste address of pModInit  in AIX */
+	if((iRet = doModInit((rsRetVal(*)(int,int*,rsRetVal(**)(),rsRetVal(*)(),struct modInfo_s*))pModInit, (uchar*) pModName, pModHdlr)) != RS_RET_OK) {
 		errmsg.LogError(0, RS_RET_MODULE_LOAD_ERR_INIT_FAILED, "could not load module '%s', rsyslog error %d\n", szPath, iRet);
 		dlclose(pModHdlr);
 		ABORT_FINALIZE(RS_RET_MODULE_LOAD_ERR_INIT_FAILED);

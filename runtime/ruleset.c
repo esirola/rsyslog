@@ -245,7 +245,7 @@ finalize_it:
  * rgerhards, 2009-11-04
  */
 static parserList_t*
-GetParserList(msg_t *pMsg)
+GetParserList(msg_tt *pMsg)
 {
 	return (pMsg->pRuleset == NULL) ? pDfltRuleset->pParserLst : pMsg->pRuleset->pParserLst;
 }

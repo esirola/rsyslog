@@ -610,7 +610,7 @@ rsf_tolower(vmstk_t *pStk, int numOperands)
 	CHKiRet(cstrConstruct(&pcstr));
 	vmstk.PopString(pStk, &operand1);
 	pSrc = cstrGetSzStr(operand1->val.pStr);
-	iStrlen = strlen((char*)pSrc); // TODO: use count from string!
+	iStrlen = strlen((char*)pSrc); // TODO: use count from string! 
 	while(iStrlen--) {
 		CHKiRet(cstrAppendChar(pcstr, tolower(*pSrc++)));
 	}
@@ -730,7 +730,7 @@ finalize_it:
  * objects are properly reference counted.
  */
 static rsRetVal
-SetMsg(vm_t *pThis, msg_t *pMsg)
+SetMsg(vm_t *pThis, msg_tt *pMsg)
 {
 	DEFiRet;
 	if(pThis->pMsg != NULL) {
@@ -829,7 +829,7 @@ BEGINObjClassInit(vm, 1, OBJ_IS_CORE_MODULE) /* class, version */
 	OBJSetMethodHandler(objMethod_DEBUGPRINT, vmDebugPrint);
 	OBJSetMethodHandler(objMethod_CONSTRUCTION_FINALIZER, vmConstructFinalize);
 
-	/* register built-in functions // TODO: move to its own module */
+	/* register built-in functions  TODO: move to its own module */
 	CHKiRet(rsfrAddFunction((uchar*)"strlen",  rsf_strlen));
 	CHKiRet(rsfrAddFunction((uchar*)"tolower", rsf_tolower));
 	CHKiRet(rsfrAddFunction((uchar*)"getenv",  rsf_getenv));

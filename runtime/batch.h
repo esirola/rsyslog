@@ -97,13 +97,13 @@ batchSetSingleRuleset(batch_t *pBatch, sbool val) {
 /* get the batches ruleset (if we have a single ruleset) */
 static inline ruleset_t*
 batchGetRuleset(batch_t *pBatch) {
-	return (pBatch->nElem > 0) ? ((msg_t*) pBatch->pElem[0].pUsrp)->pRuleset : NULL;
+	return (pBatch->nElem > 0) ? ((msg_tt*) pBatch->pElem[0].pUsrp)->pRuleset : NULL;
 }
 
 /* get the ruleset of a specifc element of the batch (index not verified!) */
 static inline ruleset_t*
 batchElemGetRuleset(batch_t *pBatch, int i) {
-	return ((msg_t*) pBatch->pElem[i].pUsrp)->pRuleset;
+	return ((msg_tt*) pBatch->pElem[i].pUsrp)->pRuleset;
 }
 
 /* get number of msgs for this batch */
@@ -179,7 +179,7 @@ batchInit(batch_t *pBatch, int maxElem) {
 	pBatch->iDoneUpTo = 0;
 	pBatch->maxElem = maxElem;
 	CHKmalloc(pBatch->pElem = calloc((size_t)maxElem, sizeof(batch_obj_t)));
-	// TODO: replace calloc by inidividual writes?
+	// TODO: replace calloc by inidividual writes? 
 finalize_it:
 	RETiRet;
 }

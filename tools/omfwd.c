@@ -126,7 +126,7 @@ closeUDPSockets(instanceData *pData)
 		freeaddrinfo(pData->f_addr);
 		pData->f_addr = NULL;
 	}
-pData->bIsConnected = 0; // TODO: remove this variable altogether
+pData->bIsConnected = 0; // TODO: remove this variable altogether 
 	RETiRet;
 }
 

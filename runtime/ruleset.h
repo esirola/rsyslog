@@ -55,7 +55,7 @@ BEGINinterface(ruleset) /* name must also be changed in ENDinterface macro! */
 	ruleset_t* (*GetCurrent)(void);
 	qqueue_t* (*GetRulesetQueue)(ruleset_t*);
 	/* v3, 2009-11-04 */
-	parserList_t* (*GetParserList)(msg_t *);
+	parserList_t* (*GetParserList)(msg_tt *);
 ENDinterface(ruleset)
 #define rulesetCURR_IF_VERSION 4 /* increment whenever you change the interface structure! */
 

@@ -392,7 +392,6 @@ static void LogLine(char *ptr, int len)
                   break;
                }
 
-	       // TODO: sprintf!!!!
                delta = sprintf( (char*) sym_start, "%s+%d/%d]",
                                 symbol, sym.offset, sym.size );
 

@@ -217,7 +217,7 @@ ENDobjDestruct(parser)
  * pMsg->pszRawMsg buffer is updated.
  * rgerhards, 2008-10-09
  */
-static inline rsRetVal uncompressMessage(msg_t *pMsg)
+static inline rsRetVal uncompressMessage(msg_tt *pMsg)
 {
 	DEFiRet;
 #	ifdef USE_NETZIP
@@ -300,7 +300,7 @@ finalize_it:
  * rgerhards, 2007-09-14
  */
 static inline rsRetVal
-SanitizeMsg(msg_t *pMsg)
+SanitizeMsg(msg_tt *pMsg)
 {
 	DEFiRet;
 	uchar *pszMsg;
@@ -424,7 +424,7 @@ finalize_it:
  * that functionality and so they do not need to implement it themsleves.
  */
 static inline rsRetVal
-ParsePRI(msg_t *pMsg)
+ParsePRI(msg_tt *pMsg)
 {
 	int pri;
 	uchar *msg;
@@ -467,7 +467,7 @@ ParsePRI(msg_t *pMsg)
  * rgerhards, 2008-10-09
  */
 static rsRetVal
-ParseMsg(msg_t *pMsg)
+ParseMsg(msg_tt *pMsg)
 {
 	rsRetVal localRet = RS_RET_ERR;
 	parserList_t *pParserList;

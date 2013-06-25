@@ -69,8 +69,15 @@ MODULE_TYPE_NOKEEP
 #endif
 
 /* emulate struct ucred for platforms that do not have it */
+
+/*  AIXPORT : struct ucred, defined in  /usr/include/sys/cred.h, but it does not have pid
+    for some reason the config.h and config.h.in decided to undef HAVE_SCM_CREDENTIALS
+    
+    and locally defined ucred clashes with the global one, So we remane it to ucredd
+ */
+
 #ifndef HAVE_SCM_CREDENTIALS
-struct ucred { int pid; };
+struct ucredd { int pid; };
 #endif
 
 /* handle some defines missing on more than one platform */
@@ -435,8 +442,9 @@ finalize_it:
  * Returns NULL if not found or rate-limiting not activated for this
  * listener (the latter being a performance enhancement).
  */
+/* AIXPORT : rename ucred to ucredd */
 static inline rsRetVal
-findRatelimiter(lstn_t *pLstn, struct ucred *cred, rs_ratelimit_state_t **prl)
+findRatelimiter(lstn_t *pLstn, struct ucredd *cred, rs_ratelimit_state_t **prl)
 {
 	rs_ratelimit_state_t *rl;
 	int r;
@@ -474,8 +482,9 @@ finalize_it:
 
 /* patch correct pid into tag. bufTAG MUST be CONF_TAG_MAXSIZE long!
  */
+/* AIXPORT : rename ucred to ucredd */
 static inline void
-fixPID(uchar *bufTAG, int *lenTag, struct ucred *cred)
+fixPID(uchar *bufTAG, int *lenTag, struct ucredd *cred)
 {
 	int i;
 	char bufPID[16];
@@ -504,10 +513,11 @@ fixPID(uchar *bufTAG, int *lenTag, struct ucred *cred)
  * We now parse the message according to expected format so that we
  * can also mangle it if necessary.
  */
+/* AIXPORT : rename ucred to ucredd */
 static inline rsRetVal
-SubmitMsg(uchar *pRcv, int lenRcv, lstn_t *pLstn, struct ucred *cred)
+SubmitMsg(uchar *pRcv, int lenRcv, lstn_t *pLstn, struct ucredd *cred)
 {
-	msg_t *pMsg;
+	msg_tt *pMsg;
 	int lenMsg;
 	int offs;
 	int i;
@@ -620,7 +630,8 @@ static rsRetVal readSocket(lstn_t *pLstn)
 #	if HAVE_SCM_CREDENTIALS
 	struct cmsghdr *cm;
 #	endif
-	struct ucred *cred;
+/* AIXPORT : rename ucred to ucredd */
+	struct ucredd *cred;
 	uchar bufRcv[4096+1];
 	char aux[128];
 	uchar *pRcv = NULL; /* receive buffer */
@@ -654,6 +665,10 @@ static rsRetVal readSocket(lstn_t *pLstn)
 	msgiov.iov_len = iMaxLine;
 	msgh.msg_iov = &msgiov;
 	msgh.msg_iovlen = 1;
+/*  AIXPORT : MSG_DONTWAIT not supported */
+#if defined (_AIX)
+#define MSG_DONTWAIT    MSG_NONBLOCK
+#endif
 	iRcvd = recvmsg(pLstn->fd, &msgh, MSG_DONTWAIT);
  
 	dbgprintf("Message from UNIX socket: #%d\n", pLstn->fd);
@@ -665,7 +680,8 @@ static rsRetVal readSocket(lstn_t *pLstn)
 			for (cm = CMSG_FIRSTHDR(&msgh); cm; cm = CMSG_NXTHDR(&msgh, cm)) {
 				dbgprintf("XXX: in CM loop, %d, %d\n", cm->cmsg_level, cm->cmsg_type);
 				if (cm->cmsg_level == SOL_SOCKET && cm->cmsg_type == SCM_CREDENTIALS) {
-					cred = (struct ucred*) CMSG_DATA(cm);
+/* AIXPORT : rename ucred to ucredd */
+					cred = (struct ucredd*) CMSG_DATA(cm);
 					dbgprintf("XXX: got credentials pid %d\n", (int) cred->pid);
 					break;
 				}

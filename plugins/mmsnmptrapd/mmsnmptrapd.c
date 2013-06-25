@@ -225,12 +225,12 @@ BEGINdoAction
 	int lenSever;
 	int lenHost;
 	int sevCode;
-	msg_t *pMsg;
+	msg_tt *pMsg;
 	uchar *pszTag;
 	uchar pszSever[512];
 	uchar pszHost[512];
 CODESTARTdoAction
-	pMsg = (msg_t*) ppString[0];
+	pMsg = (msg_tt*) ppString[0];
 	dbgprintf("XXXX: mmsnmptrapd called with pMsg %p\n", pMsg);
 	getTAG(pMsg, &pszTag, &lenTAG);
 	if(strncmp((char*)pszTag, (char*)pData->pszTagID, pData->lenTagID)) {

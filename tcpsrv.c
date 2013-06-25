@@ -492,10 +492,11 @@ finalize_it:
 static rsRetVal
 doReceive(tcpsrv_t *pThis, tcps_sess_t **ppSess, nspoll_t *pPoll)
 {
-	char buf[128*1024]; /* reception buffer - may hold a partial or multiple messages */
 	ssize_t iRcvd;
 	rsRetVal localRet;
 	DEFiRet;
+
+	char buf[128*1024]; /* reception buffer - may hold a partial or multiple messages */
 
 	ISOBJ_TYPE_assert(pThis, tcpsrv);
 	DBGPRINTF("netstream %p with new data\n", (*ppSess)->pStrm);
@@ -545,7 +546,11 @@ finalize_it:
  * This variant here is only used if we need to work with a netstream driver
  * that does not support epoll().
  */
-#pragma GCC diagnostic ignored "-Wempty-body"
+/*  AIXPORT : gcc pragma removed */
+#ifndef _AIX
+        #pragma GCC diagnostic ignored "-Wempty-body"
+#endif
+
 static inline rsRetVal
 RunSelect(tcpsrv_t *pThis)
 {
@@ -567,7 +572,7 @@ RunSelect(tcpsrv_t *pThis)
 	pthread_cleanup_push(RunCancelCleanup, (void*) &pSel);
 	while(1) {
 		CHKiRet(nssel.Construct(&pSel));
-		// TODO: set driver
+		// TODO: set driver  
 		CHKiRet(nssel.ConstructFinalize(pSel));
 
 		/* Add the TCP listen sockets to the list of read descriptors. */
@@ -629,7 +634,10 @@ finalize_it: /* this is a very special case - this time only we do not exit the 
 
 	RETiRet;
 }
-#pragma GCC diagnostic warning "-Wempty-body"
+/*  AIXPORT : gcc pragma removed */
+#ifndef _AIX
+        #pragma GCC diagnostic warning "-Wempty-body"
+#endif
 
 
 /* This function is called to gather input. It tries doing that via the epoll()
@@ -654,7 +662,7 @@ Run(tcpsrv_t *pThis)
 	 * to prevent us from leaking anything. -- rgerhards, 20080-04-24
 	 */
 	if((localRet = nspoll.Construct(&pPoll)) == RS_RET_OK) {
-		// TODO: set driver
+		// TODO: set driver 
 		localRet = nspoll.ConstructFinalize(pPoll);
 	}
 	if(localRet != RS_RET_OK) {
@@ -737,7 +745,7 @@ tcpsrvConstructFinalize(tcpsrv_t *pThis)
 		CHKiRet(netstrms.SetDrvrAuthMode(pThis->pNS, pThis->pszDrvrAuthMode));
 	if(pThis->pPermPeers != NULL)
 		CHKiRet(netstrms.SetDrvrPermPeers(pThis->pNS, pThis->pPermPeers));
-	// TODO: set driver!
+	// TODO: set driver! 
 	CHKiRet(netstrms.ConstructFinalize(pThis->pNS));
 
 	/* set up listeners */
@@ -797,7 +805,12 @@ static rsRetVal
 SetCBOnListenDeinit(tcpsrv_t *pThis, int (*pCB)(void*))
 {
 	DEFiRet;
+/* AIXPORT : Typecasting required to avoid warning */
+#if defined (_AIX)
+	pThis->pOnListenDeinit = (rsRetVal(*)(void*))pCB;
+#else
 	pThis->pOnListenDeinit = pCB;
+#endif
 	RETiRet;
 }
 
@@ -1044,7 +1057,12 @@ CODESTARTobjQueryInterface(tcpsrv)
 	pIf->SetCBIsPermittedHost = SetCBIsPermittedHost;
 	pIf->SetCBOpenLstnSocks = SetCBOpenLstnSocks;
 	pIf->SetCBRcvData = SetCBRcvData;
+/* AIXPORT : Typecasting required to avoid warnings */
+#if defined (_AIX)
+	pIf->SetCBOnListenDeinit = (rsRetVal(*)(struct tcpsrv_s*,rsRetVal(*)(void*)))SetCBOnListenDeinit;
+#else
 	pIf->SetCBOnListenDeinit = SetCBOnListenDeinit;
+#endif
 	pIf->SetCBOnSessAccept = SetCBOnSessAccept;
 	pIf->SetCBOnSessConstructFinalize = SetCBOnSessConstructFinalize;
 	pIf->SetCBOnSessDestruct = SetCBOnSessDestruct;

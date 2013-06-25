@@ -44,10 +44,6 @@
 #  include <sys/prctl.h>
 #endif
 
-/// TODO: check on solaris if this is any longer needed - I don't think so - rgerhards, 2009-09-20
-//#ifdef OS_SOLARIS
-//#	include <sched.h>
-//#endif
 
 #include "rsyslog.h"
 #include "stringbuf.h"
@@ -98,10 +94,11 @@ BEGINobjConstruct(wtp) /* be sure to specify the object type also in END macro! 
 #endif
 	pthread_attr_setdetachstate(&pThis->attrThrd, PTHREAD_CREATE_DETACHED);
 	/* set all function pointers to "not implemented" dummy so that we can safely call them */
-	pThis->pfChkStopWrkr = NotImplementedDummy;
-	pThis->pfGetDeqBatchSize = NotImplementedDummy;
-	pThis->pfDoWork = NotImplementedDummy;
-	pThis->pfObjProcessed = NotImplementedDummy;
+/* AIXPORT : typecase required here to avoid warning */
+	pThis->pfChkStopWrkr = (rsRetVal(*)(void*,int))NotImplementedDummy;
+	pThis->pfGetDeqBatchSize = (rsRetVal(*)(void*,int*))NotImplementedDummy;
+	pThis->pfDoWork = (rsRetVal(*)(void*,void*))NotImplementedDummy;
+	pThis->pfObjProcessed = (rsRetVal(*)(void*,struct wti_s*))NotImplementedDummy;
 	INIT_ATOMIC_HELPER_MUT(pThis->mutCurNumWrkThrd);
 	INIT_ATOMIC_HELPER_MUT(pThis->mutWtpState);
 ENDobjConstruct(wtp)
@@ -176,7 +173,7 @@ rsRetVal
 wtpSetState(wtp_t *pThis, wtpState_t iNewState)
 {
 	ISOBJ_TYPE_assert(pThis, wtp);
-	pThis->wtpState = iNewState; // TODO: do we need a mutex here? 2010-04-26
+	pThis->wtpState = iNewState; // TODO: do we need a mutex here? 2010-04-26 
 	return RS_RET_OK;
 }
 
@@ -213,8 +210,11 @@ finalize_it:
 	RETiRet;
 }
 
+/*  AIXPORT : gcc pragma removed */
+#ifndef _AIX
+        #pragma GCC diagnostic ignored "-Wempty-body"
+#endif
 
-#pragma GCC diagnostic ignored "-Wempty-body"
 /* Send a shutdown command to all workers and see if they terminate.
  * A timeout may be specified. This function may also be called with
  * the current number of workers being 0, in which case it does not
@@ -267,7 +267,10 @@ wtpShutdownAll(wtp_t *pThis, wtpState_t tShutdownCmd, struct timespec *ptTimeout
 	
 	RETiRet;
 }
-#pragma GCC diagnostic warning "-Wempty-body"
+/*  AIXPORT : gcc pragma removed */
+#ifndef _AIX
+        #pragma GCC diagnostic warning "-Wempty-body"
+#endif
 
 
 /* Unconditionally cancel all running worker threads.
@@ -348,7 +351,10 @@ wtpWrkrExecCancelCleanup(void *arg)
  * wti worker.
  * rgerhards, 2008-01-21
  */
-#pragma GCC diagnostic ignored "-Wempty-body"
+/*  AIXPORT : gcc pragma removed */
+#ifndef _AIX
+        #pragma GCC diagnostic ignored "-Wempty-body"
+#endif
 static void *
 wtpWorker(void *arg) /* the arg is actually a wti object, even though we are in wtp! */
 {
@@ -396,7 +402,10 @@ wtpWorker(void *arg) /* the arg is actually a wti object, even though we are in 
 	pthread_cond_broadcast(&pThis->condThrdTrm); /* activate anyone waiting on thread shutdown */
 	pthread_exit(0);
 }
-#pragma GCC diagnostic warning "-Wempty-body"
+/*  AIXPORT : gcc pragma removed */
+#ifndef _AIX
+        #pragma GCC diagnostic warning "-Wempty-body"
+#endif
 
 
 /* start a new worker */

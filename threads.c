@@ -213,6 +213,7 @@ rsRetVal thrdCreate(rsRetVal (*thrdMain)(thrdInfo_t*), rsRetVal(*afterRun)(thrdI
 {
 	DEFiRet;
 	thrdInfo_t *pThis;
+	pthread_attr_t aix_attr;
 
 	assert(thrdMain != NULL);
 
@@ -221,6 +222,12 @@ rsRetVal thrdCreate(rsRetVal (*thrdMain)(thrdInfo_t*), rsRetVal(*afterRun)(thrdI
 	pThis->pUsrThrdMain = thrdMain;
 	pThis->pAfterRun = afterRun;
 	pThis->bNeedsCancel = bNeedsCancel;
+
+#if defined (_AIX)
+	pthread_attr_init(&aix_attr);
+	pthread_attr_setstacksize(&aix_attr, 1024*256);
+	pthread_create(&pThis->thrdID, &aix_attr, thrdStarter, pThis);
+#else
 	pthread_create(&pThis->thrdID,
 #ifdef HAVE_PTHREAD_SETSCHEDPARAM
 			   &default_thread_attr,
@@ -228,6 +235,7 @@ rsRetVal thrdCreate(rsRetVal (*thrdMain)(thrdInfo_t*), rsRetVal(*afterRun)(thrdI
 			   NULL,
 #endif
 			   thrdStarter, pThis);
+#endif
 	CHKiRet(llAppend(&llThrds, NULL, pThis));
 
 finalize_it:

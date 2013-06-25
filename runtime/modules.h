@@ -136,10 +136,10 @@ struct modInfo_s {
 		    	char dummy;
 		} lm;
 		struct { /* data for parser modules */
-			rsRetVal (*parse)(msg_t*);
+			rsRetVal (*parse)(msg_tt*);
 		} pm;
 		struct { /* data for strgen modules */
-			rsRetVal (*strgen)(msg_t*, uchar**, size_t *);
+			rsRetVal (*strgen)(msg_tt*, uchar**, size_t *);
 		} sm;
 	} mod;
 	void *pModHdlr; /* handler to the dynamic library holding the module */

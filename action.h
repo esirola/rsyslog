@@ -80,7 +80,7 @@ struct action_s {
 	int	iNumTpls;	/* number of array entries for template element below */
 	struct template **ppTpl;/* array of template to use - strings must be passed to doAction
 				 * in this order. */
-	msg_t *f_pMsg;		/* pointer to the message (this will replace the other vars with msg
+	msg_tt *f_pMsg;		/* pointer to the message (this will replace the other vars with msg
 				 * content later). This is preserved after the message has been
 				 * processed - it is also used to detect duplicates.
 				 */

@@ -84,7 +84,7 @@ finalize_it:
  * offers big performance improvements.
  * rewritten 2009-06-19 rgerhards
  */
-rsRetVal tplToString(struct template *pTpl, msg_t *pMsg, uchar **ppBuf, size_t *pLenBuf)
+rsRetVal tplToString(struct template *pTpl, msg_tt *pMsg, uchar **ppBuf, size_t *pLenBuf)
 {
 	DEFiRet;
 	struct templateEntry *pTpe;
@@ -168,7 +168,7 @@ finalize_it:
  * is indicated by a NULL pointer.
  * rgerhards, 2009-04-03
  */
-rsRetVal tplToArray(struct template *pTpl, msg_t *pMsg, uchar*** ppArr)
+rsRetVal tplToArray(struct template *pTpl, msg_tt *pMsg, uchar*** ppArr)
 {
 	DEFiRet;
 	struct templateEntry *pTpe;

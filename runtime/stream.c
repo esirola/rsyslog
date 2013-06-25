@@ -1059,7 +1059,7 @@ asyncWriterThread(void *pPtr)
 
 		iDeq = pThis->iDeq++ % STREAM_ASYNC_NUMBUFS;
 		doWriteInternal(pThis, pThis->asyncBuf[iDeq].pBuf, pThis->asyncBuf[iDeq].lenBuf);
-		// TODO: error check????? 2009-07-06
+		// TODO: error check????? 2009-07-06 
 
 		--pThis->iCnt;
 		if(pThis->iCnt < STREAM_ASYNC_NUMBUFS) {
@@ -1283,7 +1283,7 @@ static rsRetVal strmSeek(strm_t *pThis, off64_t offs)
 	}
 	long long i;
 	DBGOPRINT((obj_t*) pThis, "file %d seek, pos %llu\n", pThis->fd, (long long unsigned) offs);
-	i = lseek64(pThis->fd, offs, SEEK_SET); // TODO: check error!
+	i = lseek64(pThis->fd, offs, SEEK_SET); // TODO: check error! 
 	pThis->iCurrOffs = offs; /* we are now at *this* offset */
 	pThis->iBufPtr = 0; /* buffer invalidated */
 
@@ -1382,7 +1382,7 @@ strmWrite(strm_t *pThis, uchar *pBuf, size_t lenBuf)
 	ASSERT(pThis != NULL);
 	ASSERT(pBuf != NULL);
 
-//DBGPRINTF("strmWrite(%p, '%65.65s', %ld);, disabled %d, sizelim %ld, size %lld\n", pThis, pBuf,lenBuf, pThis->bDisabled, pThis->iSizeLimit, pThis->iCurrOffs);
+// DBGPRINTF("strmWrite(%p, '%65.65s', %ld);, disabled %d, sizelim %ld, size %lld\n", pThis, pBuf,lenBuf, pThis->bDisabled, pThis->iSizeLimit, pThis->iCurrOffs);
 	if(pThis->bAsyncWrite)
 		d_pthread_mutex_lock(&pThis->mut);
 

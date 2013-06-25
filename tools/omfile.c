@@ -514,7 +514,7 @@ prepareDynFile(instanceData *pData, uchar *newFileName, unsigned iMsgOpts)
 	   && !ustrcmp(newFileName, pCache[pData->iCurrElt]->pName)) {
 	   	/* great, we are all set */
 		pCache[pData->iCurrElt]->clkTickAccessed = getClockFileAccess();
-		// LRU needs only a strictly monotonically increasing counter, so such a one could do
+		/* LRU needs only a strictly monotonically increasing counter, so such a one could do */
 		FINALIZE;
 	}
 
@@ -530,7 +530,7 @@ prepareDynFile(instanceData *pData, uchar *newFileName, unsigned iMsgOpts)
 			if(iFirstFree == -1)
 				iFirstFree = i;
 		} else { /* got an element, let's see if it matches */
-			if(!ustrcmp(newFileName, pCache[i]->pName)) {  // RG:  name == NULL?
+			if(!ustrcmp(newFileName, pCache[i]->pName)) {  /* RG:  name == NULL? */
 				/* we found our element! */
 				pData->pStrm = pCache[i]->pStrm;
 				pData->iCurrElt = i;

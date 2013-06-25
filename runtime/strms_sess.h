@@ -35,7 +35,7 @@ struct strms_sess_s {
 	strmsrv_t *pSrv;	/* pointer back to my server (e.g. for callbacks) */
 	strmLstnPortList_t *pLstnInfo;	/* pointer back to listener info */
 	netstrm_t *pStrm;
-//	uchar *pMsg;		/* message (fragment) received */
+/*	uchar *pMsg;  */		// message (fragment) received 
 	uchar *fromHost;
 	uchar *fromHostIP;
 	void *pUsr;		/* a user-pointer */

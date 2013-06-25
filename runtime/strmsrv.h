@@ -75,7 +75,7 @@ BEGINinterface(strmsrv) /* name must also be changed in ENDinterface macro! */
 	rsRetVal (*ConstructFinalize)(strmsrv_t __attribute__((unused)) *pThis);
 	rsRetVal (*Destruct)(strmsrv_t **ppThis);
 	rsRetVal (*configureSTRMListen)(strmsrv_t*, uchar *pszPort);
-	//rsRetVal (*SessAccept)(strmsrv_t *pThis, strmLstnPortList_t*, strms_sess_t **ppSess, netstrm_t *pStrm);
+	// rsRetVal (*SessAccept)(strmsrv_t *pThis, strmLstnPortList_t*, strms_sess_t **ppSess, netstrm_t *pStrm);  
 	rsRetVal (*create_strm_socket)(strmsrv_t *pThis);
 	rsRetVal (*Run)(strmsrv_t *pThis);
 	/* set methods */

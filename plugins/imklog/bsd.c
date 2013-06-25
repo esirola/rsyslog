@@ -100,7 +100,7 @@ klogWillRun(void)
 	fklog = open((char*)GetPath(), O_RDONLY, 0);
 	if (fklog < 0) {
 		dbgprintf("can't open %s (%d)\n", GetPath(), errno);
-		iRet = RS_RET_ERR; // TODO: better error code
+		iRet = RS_RET_ERR; 
 	}
 
 	RETiRet;

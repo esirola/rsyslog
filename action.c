@@ -724,13 +724,13 @@ rsRetVal actionDbgPrint(action_t *pThis)
 static rsRetVal prepareDoActionParams(action_t *pAction, batch_obj_t *pElem)
 {
 	int i;
-	msg_t *pMsg;
+	msg_tt *pMsg;
 	DEFiRet;
 
 	ASSERT(pAction != NULL);
 	ASSERT(pElem != NULL);
 
-	pMsg = (msg_t*) pElem->pUsrp;
+	pMsg = (msg_tt*) pElem->pUsrp;
 	/* here we must loop to process all requested strings */
 	for(i = 0 ; i < pAction->iNumTpls ; ++i) {
 		switch(pAction->eParamPassing) {
@@ -818,7 +818,7 @@ static rsRetVal releaseBatch(action_t *pAction, batch_t *pBatch)
  * rgerhards, 2008-01-28
  */
 rsRetVal
-actionCallDoAction(action_t *pThis, msg_t *pMsg, void *actParams)
+actionCallDoAction(action_t *pThis, msg_tt *pMsg, void *actParams)
 {
 	DEFiRet;
 
@@ -866,7 +866,7 @@ finalize_it:
  * rgerhards, 2008-01-28
  */
 static inline rsRetVal
-actionProcessMessage(action_t *pThis, msg_t *pMsg, void *actParams, int *pbShutdownImmediate)
+actionProcessMessage(action_t *pThis, msg_tt *pMsg, void *actParams, int *pbShutdownImmediate)
 {
 	DEFiRet;
 
@@ -950,7 +950,7 @@ tryDoAction(action_t *pAction, batch_t *pBatch, int *pnElem)
 	int i;
 	int iElemProcessed;
 	int iCommittedUpTo;
-	msg_t *pMsg;
+	msg_tt *pMsg;
 	rsRetVal localRet;
 	DEFiRet;
 
@@ -969,7 +969,7 @@ dbgprintf("XXXXX:  tryDoAction %p, pnElem %d, nElem %d\n", pAction, *pnElem, pBa
 		 */
 		if(   pBatch->pElem[i].bFilterOK
 		    && pBatch->pElem[i].state != BATCH_STATE_DISC) {
-			pMsg = (msg_t*) pBatch->pElem[i].pUsrp;
+			pMsg = (msg_tt*) pBatch->pElem[i].pUsrp;
 			localRet = actionProcessMessage(pAction, pMsg, pBatch->pElem[i].staticActParams,
 							pBatch->pbShutdownImmediate);
 			DBGPRINTF("action %p call returned %d\n", pAction, localRet);
@@ -982,7 +982,7 @@ dbgprintf("XXXXX:  tryDoAction %p, pnElem %d, nElem %d\n", pAction, *pnElem, pBa
 					pBatch->pElem[iCommittedUpTo].bPrevWasSuspended = 0; /* we had success! */
 					batchSetElemState(pBatch, iCommittedUpTo, BATCH_STATE_COMM);
 					++iCommittedUpTo;
-					//pBatch->pElem[iCommittedUpTo++].state = BATCH_STATE_COMM;
+					// pBatch->pElem[iCommittedUpTo++].state = BATCH_STATE_COMM; 
 				}
 			} else if(localRet == RS_RET_PREVIOUS_COMMITTED) {
 				/* mark messages as committed */
@@ -990,7 +990,7 @@ dbgprintf("XXXXX:  tryDoAction %p, pnElem %d, nElem %d\n", pAction, *pnElem, pBa
 					pBatch->pElem[iCommittedUpTo].bPrevWasSuspended = 0; /* we had success! */
 					batchSetElemState(pBatch, iCommittedUpTo, BATCH_STATE_COMM);
 					++iCommittedUpTo;
-					//pBatch->pElem[iCommittedUpTo++].state = BATCH_STATE_COMM;
+					// pBatch->pElem[iCommittedUpTo++].state = BATCH_STATE_COMM; 
 				}
 				pBatch->pElem[i].state = BATCH_STATE_SUB;
 			} else if(localRet == RS_RET_DEFER_COMMIT) {
@@ -1143,8 +1143,10 @@ finalize_it:
 	RETiRet;
 }
 
-
-#pragma GCC diagnostic ignored "-Wempty-body"
+/*  AIXPORT : gcc pragma removed */
+#ifndef _AIX
+#pragma GCC diagnostic ignored "-Wempty-body" 
+#endif
 /* receive an array of to-process user pointers and submit them
  * for processing.
  * rgerhards, 2009-04-22
@@ -1188,7 +1190,10 @@ finalize_it:
 	pBatch->pbShutdownImmediate = pbShutdownImmdtSave;
 	RETiRet;
 }
-#pragma GCC diagnostic warning "-Wempty-body"
+/*  AIXPORT : gcc pragma removed */
+#ifndef _AIX
+#pragma GCC diagnostic warning "-Wempty-body" 
+#endif
 
 
 /* call the HUP handler for a given action, if such a handler is defined. The
@@ -1196,7 +1201,10 @@ finalize_it:
  * some internal state information.
  * rgerhards, 2008-10-22
  */
-#pragma GCC diagnostic ignored "-Wempty-body"
+/*  AIXPORT : gcc pragma removed */
+#ifndef _AIX
+#pragma GCC diagnostic ignored "-Wempty-body" 
+#endif
 rsRetVal
 actionCallHUPHdlr(action_t *pAction)
 {
@@ -1217,8 +1225,10 @@ actionCallHUPHdlr(action_t *pAction)
 finalize_it:
 	RETiRet;
 }
-#pragma GCC diagnostic warning "-Wempty-body"
-
+/*  AIXPORT : gcc pragma removed */
+#ifndef _AIX
+#pragma GCC diagnostic warning "-Wempty-body" 
+#endif
 
 /* set the action message queue mode
  * TODO: probably move this into queue object, merge with MainMsgQueue!
@@ -1257,7 +1267,7 @@ static rsRetVal setActionQueType(void __attribute__((unused)) *pVal, uchar *pszT
  * rgerhards, 2010-06-08
  */
 static inline rsRetVal
-doSubmitToActionQ(action_t *pAction, msg_t *pMsg)
+doSubmitToActionQ(action_t *pAction, msg_tt *pMsg)
 {
 	DEFiRet;
 
@@ -1280,7 +1290,7 @@ doSubmitToActionQ(action_t *pAction, msg_t *pMsg)
 rsRetVal
 actionWriteToAction(action_t *pAction)
 {
-	msg_t *pMsgSave;	/* to save current message pointer, necessary to restore
+	msg_tt *pMsgSave;	/* to save current message pointer, necessary to restore
 				   it in case it needs to be updated (e.g. repeated msgs) */
 	DEFiRet;
 
@@ -1321,7 +1331,7 @@ actionWriteToAction(action_t *pAction)
 	 * rgerhards, 2007-07-10
 	 */
 	if(pAction->f_prevcount > 1) {
-		msg_t *pMsg;
+		msg_tt *pMsg;
 		size_t lenRepMsg;
 		uchar szRepMsg[1024];
 
@@ -1404,10 +1414,10 @@ finalize_it:
 static inline rsRetVal
 doActionCallAction(action_t *pAction, batch_t *pBatch, int idxBtch)
 {
-	msg_t *pMsg;
+	msg_tt *pMsg;
 	DEFiRet;
 
-	pMsg = (msg_t*)(pBatch->pElem[idxBtch].pUsrp);
+	pMsg = (msg_tt*)(pBatch->pElem[idxBtch].pUsrp);
 	pAction->tActNow = -1; /* we do not yet know our current time (clear prev. value) */
 
 	/* don't output marks to recently written outputs */
@@ -1504,7 +1514,7 @@ doSubmitToActionQNotAllMarkBatch(action_t *pAction, batch_t *pBatch)
 		 * also faster ;) -- rgerhards, 2008-09-17 */
 		do {
 			lastAct = pAction->f_time;
-			if(((msg_t*)(pBatch->pElem[i].pUsrp))->msgFlags & MARK) {
+			if(((msg_tt*)(pBatch->pElem[i].pUsrp))->msgFlags & MARK) {
 				if((now - lastAct) < MarkInterval / 2) {
 					pBatch->pElem[i].bFilterOK = 0;
 					bModifiedFilter = 1;
@@ -1513,7 +1523,7 @@ doSubmitToActionQNotAllMarkBatch(action_t *pAction, batch_t *pBatch)
 				}
 			}
 		} while(ATOMIC_CAS_time_t(&pAction->f_time, lastAct,
-			((msg_t*)(pBatch->pElem[i].pUsrp))->ttGenTime, &pAction->mutCAS) == 0);
+			((msg_tt*)(pBatch->pElem[i].pUsrp))->ttGenTime, &pAction->mutCAS) == 0);
 		if(pBatch->pElem[i].bFilterOK) {
 			DBGPRINTF("Called action(NotAllMark), processing batch[%d] via '%s'\n",
 				  i, module.GetStateName(pAction->pMod));
@@ -1626,7 +1636,7 @@ doSubmitToActionQBatch(action_t *pAction, batch_t *pBatch)
 			if(   pBatch->pElem[i].bFilterOK
 			   && pBatch->pElem[i].state != BATCH_STATE_DISC
 			   && (pAction->bExecWhenPrevSusp == 0 || pBatch->pElem[i].bPrevWasSuspended == 1)) {
-				doSubmitToActionQ(pAction, (msg_t*)(pBatch->pElem[i].pUsrp));
+				doSubmitToActionQ(pAction, (msg_tt*)(pBatch->pElem[i].pUsrp));
 			}
 		}
 	}
@@ -1665,7 +1675,10 @@ helperSubmitToActionQComplexBatch(action_t *pAction, batch_t *pBatch)
 /* Call configured action, most complex case with all features supported (and thus slow).
  * rgerhards, 2010-06-08
  */
-#pragma GCC diagnostic ignored "-Wempty-body"
+/*  AIXPORT : gcc pragma removed */
+#ifndef _AIX
+#pragma GCC diagnostic ignored "-Wempty-body" 
+#endif
 static rsRetVal
 doSubmitToActionQComplexBatch(action_t *pAction, batch_t *pBatch)
 {
@@ -1679,7 +1692,10 @@ doSubmitToActionQComplexBatch(action_t *pAction, batch_t *pBatch)
 
 	RETiRet;
 }
-#pragma GCC diagnostic warning "-Wempty-body"
+/*  AIXPORT : gcc pragma removed */
+#ifndef _AIX
+#pragma GCC diagnostic warning "-Wempty-body" 
+#endif
 
 /* add an Action to the current selector
  * The pOMSR is freed, as it is not needed after this function.

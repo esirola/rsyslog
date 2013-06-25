@@ -94,7 +94,7 @@ initConfigSettings(void)
 static inline rsRetVal
 doSubmitMsg(uchar *line)
 {
-	msg_t *pMsg;
+	msg_tt *pMsg;
 	DEFiRet;
 
 	CHKiRet(msgConstruct(&pMsg));

@@ -90,7 +90,7 @@ BEGINinterface(tcpsrv) /* name must also be changed in ENDinterface macro! */
 	rsRetVal (*ConstructFinalize)(tcpsrv_t __attribute__((unused)) *pThis);
 	rsRetVal (*Destruct)(tcpsrv_t **ppThis);
 	rsRetVal (*configureTCPListen)(tcpsrv_t*, uchar *pszPort);
-	//rsRetVal (*SessAccept)(tcpsrv_t *pThis, tcpLstnPortList_t*, tcps_sess_t **ppSess, netstrm_t *pStrm);
+	// rsRetVal (*SessAccept)(tcpsrv_t *pThis, tcpLstnPortList_t*, tcps_sess_t **ppSess, netstrm_t *pStrm); 
 	rsRetVal (*create_tcp_socket)(tcpsrv_t *pThis);
 	rsRetVal (*Run)(tcpsrv_t *pThis);
 	/* set methods */

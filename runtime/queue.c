@@ -77,7 +77,13 @@ DEFobjCurrIf(statsobj)
 static inline rsRetVal doEnqSingleObj(qqueue_t *pThis, flowControl_t flowCtlType, void *pUsr);
 static rsRetVal qqueueChkPersist(qqueue_t *pThis, int nUpdates);
 static rsRetVal RateLimiter(qqueue_t *pThis);
+/*  AIXPORT : return type mismatch corrected */
+#if defined (_AIX)
+static rsRetVal qqueueChkStopWrkrDA(qqueue_t *pThis);
+#else
 static int qqueueChkStopWrkrDA(qqueue_t *pThis);
+#endif
+
 static rsRetVal GetDeqBatchSize(qqueue_t *pThis, int *pVal);
 static rsRetVal ConsumerDA(qqueue_t *pThis, wti_t *pWti);
 static rsRetVal batchProcessed(qqueue_t *pThis, wti_t *pWti);
@@ -854,7 +860,7 @@ static rsRetVal qAddDirect(qqueue_t *pThis, void* pUsr)
 	int i;
 	DEFiRet;
 
-	//TODO: init batchObj (states _OK and new fields -- CHECK)
+	// TODO: init batchObj (states _OK and new fields -- CHECK) 
 	ASSERT(pThis != NULL);
 
 	/* calling the consumer is quite different here than it is from a worker thread */
@@ -955,9 +961,9 @@ qqueueDeq(qqueue_t *pThis, void **ppUsr)
 	 */
 	iRet = pThis->qDeq(pThis, ppUsr);
 	ATOMIC_INC(&pThis->nLogDeq, &pThis->mutLogDeq);
-
 //	DBGOPRINT((obj_t*) pThis, "entry deleted, size now log %d, phys %d entries\n",
 //		  getLogicalQueueSize(pThis), getPhysicalQueueSize(pThis));
+
 
 	RETiRet;
 }
@@ -1065,7 +1071,7 @@ RUNLOG_STR("trying to shutdown workers within Action Timeout");
 		pThis->pqDA->bShutdownImmediate = 1;
 	}
 
-// TODO: make sure we have at minimum a 10ms timeout - workers deserve a chance...
+// TODO: make sure we have at minimum a 10ms timeout - workers deserve a chance... 
 	/* now give the queue workers a last chance to gracefully shut down (based on action timeout setting) */
 	timeoutComp(&tTimeout, pThis->toActShutdown);
 	DBGOPRINT((obj_t*) pThis, "trying immediate shutdown of regular workers (if any)\n");
@@ -1411,7 +1417,7 @@ DeleteProcessedBatch(qqueue_t *pThis, batch_t *pBatch)
 		   || pBatch->pElem[i].state == BATCH_STATE_SUB) {
 dbgprintf("XXX: DeleteProcessedBatch re-enqueue %d of %d, state %d\n", i, pBatch->nElem, pBatch->pElem[i].state);
 			localRet = doEnqSingleObj(pThis, eFLOWCTL_NO_DELAY,
-				       (obj_t*)MsgAddRef((msg_t*) pUsr));
+				       (obj_t*)MsgAddRef((msg_tt*) pUsr));
 			++nEnqueued;
 			if(localRet != RS_RET_OK) {
 				DBGPRINTF("error %d re-enqueuing unprocessed data element - discarded\n", localRet);
@@ -1427,7 +1433,7 @@ dbgprintf("XXX: DeleteProcessedBatch re-enqueue %d of %d, state %d\n", i, pBatch
 
 	iRet = DeleteBatchFromQStore(pThis, pBatch);
 
-	pBatch->nElem = pBatch->nElemDeq = 0; /* reset batch */ // TODO: more fine init, new fields! 2010-06-14
+	pBatch->nElem = pBatch->nElemDeq = 0; /* reset batch */ // TODO: more fine init, new fields! 2010-06-14 
 
 	RETiRet;
 }
@@ -1472,7 +1478,8 @@ DequeueConsumableElements(qqueue_t *pThis, wti_t *pWti, int *piRemainingQueueSiz
 		/* all well, use this element */
 		pWti->batch.pElem[nDequeued].pUsrp = pUsr;
 		pWti->batch.pElem[nDequeued].state = BATCH_STATE_RDY;
-		pWti->batch.pElem[nDequeued].bFilterOK = 1; // TODO: think again if we can handle that with more performance
+
+		pWti->batch.pElem[nDequeued].bFilterOK = 1; // TODO: think again if we can handle that with more performance 
 		++nDequeued;
 	}
 
@@ -1519,7 +1526,7 @@ DequeueConsumable(qqueue_t *pThis, wti_t *pWti)
 		pthread_cond_broadcast(&pThis->belowLightDlyWtrMrk);
 	}
 
-	// TODO: MULTI: check physical queue size?
+	// TODO: MULTI: check physical queue size
 	pthread_cond_signal(&pThis->notFull);
 	/* WE ARE NO LONGER PROTECTED BY THE MUTEX */
 
@@ -1707,7 +1714,8 @@ ConsumerReg(qqueue_t *pThis, wti_t *pWti)
 	/* we now need to check if we should deliberately delay processing a bit
 	 * and, if so, do that. -- rgerhards, 2008-01-30
 	 */
-//TODO: MULTIQUEUE: the following setting is no longer correct - need to think about how to do that...
+
+// TODO: MULTIQUEUE: the following setting is no longer correct - need to think about how to do that... 
 	if(pThis->iDeqSlowdown) {
 		DBGOPRINT((obj_t*) pThis, "sleeping %d microseconds as requested by config params\n",
 			  pThis->iDeqSlowdown);
@@ -1759,11 +1767,11 @@ ConsumerDA(qqueue_t *pThis, wti_t *pWti)
 	/* iterate over returned results and enqueue them in DA queue */
 	for(i = 0 ; i < pWti->batch.nElem && !pThis->bShutdownImmediate ; i++) {
 		/* TODO: we must add a generic "addRef" mechanism, because the disk queue enqueue destructs
-		 * the message. So far, we simply assume we always have msg_t, what currently is always the case.
+		 * the message. So far, we simply assume we always have msg_tt, what currently is always the case.
 		 * rgerhards, 2009-05-28
 		 */
 		CHKiRet(qqueueEnqObj(pThis->pqDA, eFLOWCTL_NO_DELAY,
-			(obj_t*)MsgAddRef((msg_t*)(pWti->batch.pElem[i].pUsrp))));
+			(obj_t*)MsgAddRef((msg_tt*)(pWti->batch.pElem[i].pUsrp))));
 		pWti->batch.pElem[i].state = BATCH_STATE_COMM; /* commited to other queue! */
 	}
 
@@ -1787,7 +1795,7 @@ qqueueChkStopWrkrDA(qqueue_t *pThis)
 {
 	DEFiRet;
 
-//DBGPRINTF("XXXX: chkStopWrkrDA called, low watermark %d, phys Size %d\n", pThis->iLowWtrMrk, getPhysicalQueueSize(pThis));
+// DBGPRINTF("XXXX: chkStopWrkrDA called, low watermark %d, phys Size %d\n", pThis->iLowWtrMrk, getPhysicalQueueSize(pThis)); 
 	if(pThis->bEnqOnly) {
 		iRet = RS_RET_TERMINATE_WHEN_IDLE;
 	}
@@ -1827,7 +1835,7 @@ GetDeqBatchSize(qqueue_t *pThis, int *pVal)
 	DEFiRet;
 	assert(pVal != NULL);
 	*pVal = pThis->iDeqBatchSize;
-if(pThis->pqParent != NULL) // TODO: check why we actually do this!
+if(pThis->pqParent != NULL) // TODO: check why we actually do this! 
 	*pVal = 16;
 	RETiRet;
 }

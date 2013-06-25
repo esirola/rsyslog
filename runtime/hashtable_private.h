@@ -5,6 +5,8 @@
 
 #include "hashtable.h"
 
+/*  AIXPORT : AIX C compiler has issue with inline keyword */   
+#define inline
 /*****************************************************************************/
 struct entry
 {

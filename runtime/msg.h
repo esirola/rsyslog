@@ -137,54 +137,54 @@ struct msg {
 /* function prototypes
  */
 PROTOTYPEObjClassInit(msg);
-rsRetVal msgConstruct(msg_t **ppThis);
-rsRetVal msgConstructWithTime(msg_t **ppThis, struct syslogTime *stTime, time_t ttGenTime);
-rsRetVal msgDestruct(msg_t **ppM);
-msg_t* MsgDup(msg_t* pOld);
-msg_t *MsgAddRef(msg_t *pM);
-void setProtocolVersion(msg_t *pM, int iNewVersion);
-void MsgSetInputName(msg_t *pMsg, prop_t*);
-rsRetVal MsgSetAPPNAME(msg_t *pMsg, char* pszAPPNAME);
-rsRetVal MsgSetPROCID(msg_t *pMsg, char* pszPROCID);
-rsRetVal MsgSetMSGID(msg_t *pMsg, char* pszMSGID);
-void MsgSetTAG(msg_t *pMsg, uchar* pszBuf, size_t lenBuf);
-void MsgSetRuleset(msg_t *pMsg, ruleset_t*);
-rsRetVal MsgSetFlowControlType(msg_t *pMsg, flowControl_t eFlowCtl);
-rsRetVal MsgSetStructuredData(msg_t *pMsg, char* pszStrucData);
-rsRetVal msgSetFromSockinfo(msg_t *pThis, struct sockaddr_storage *sa);
-void MsgSetRcvFrom(msg_t *pMsg, prop_t*);
-void MsgSetRcvFromStr(msg_t *pMsg, uchar* pszRcvFrom, int, prop_t **);
-rsRetVal MsgSetRcvFromIP(msg_t *pMsg, prop_t*);
-rsRetVal MsgSetRcvFromIPStr(msg_t *pThis, uchar *psz, int len, prop_t **ppProp);
-void MsgSetHOSTNAME(msg_t *pMsg, uchar* pszHOSTNAME, int lenHOSTNAME);
-rsRetVal MsgSetAfterPRIOffs(msg_t *pMsg, short offs);
-void MsgSetMSGoffs(msg_t *pMsg, short offs);
-void MsgSetRawMsgWOSize(msg_t *pMsg, char* pszRawMsg);
-void MsgSetRawMsg(msg_t *pMsg, char* pszRawMsg, size_t lenMsg);
-rsRetVal MsgReplaceMSG(msg_t *pThis, uchar* pszMSG, int lenMSG);
-uchar *MsgGetProp(msg_t *pMsg, struct templateEntry *pTpe,
+rsRetVal msgConstruct(msg_tt **ppThis);
+rsRetVal msgConstructWithTime(msg_tt **ppThis, struct syslogTime *stTime, time_t ttGenTime);
+rsRetVal msgDestruct(msg_tt **ppM);
+msg_tt* MsgDup(msg_tt* pOld);
+msg_tt *MsgAddRef(msg_tt *pM);
+void setProtocolVersion(msg_tt *pM, int iNewVersion);
+void MsgSetInputName(msg_tt *pMsg, prop_t*);
+rsRetVal MsgSetAPPNAME(msg_tt *pMsg, char* pszAPPNAME);
+rsRetVal MsgSetPROCID(msg_tt *pMsg, char* pszPROCID);
+rsRetVal MsgSetMSGID(msg_tt *pMsg, char* pszMSGID);
+void MsgSetTAG(msg_tt *pMsg, uchar* pszBuf, size_t lenBuf);
+void MsgSetRuleset(msg_tt *pMsg, ruleset_t*);
+rsRetVal MsgSetFlowControlType(msg_tt *pMsg, flowControl_t eFlowCtl);
+rsRetVal MsgSetStructuredData(msg_tt *pMsg, char* pszStrucData);
+rsRetVal msgSetFromSockinfo(msg_tt *pThis, struct sockaddr_storage *sa);
+void MsgSetRcvFrom(msg_tt *pMsg, prop_t*);
+void MsgSetRcvFromStr(msg_tt *pMsg, uchar* pszRcvFrom, int, prop_t **);
+rsRetVal MsgSetRcvFromIP(msg_tt *pMsg, prop_t*);
+rsRetVal MsgSetRcvFromIPStr(msg_tt *pThis, uchar *psz, int len, prop_t **ppProp);
+void MsgSetHOSTNAME(msg_tt *pMsg, uchar* pszHOSTNAME, int lenHOSTNAME);
+rsRetVal MsgSetAfterPRIOffs(msg_tt *pMsg, short offs);
+void MsgSetMSGoffs(msg_tt *pMsg, short offs);
+void MsgSetRawMsgWOSize(msg_tt *pMsg, char* pszRawMsg);
+void MsgSetRawMsg(msg_tt *pMsg, char* pszRawMsg, size_t lenMsg);
+rsRetVal MsgReplaceMSG(msg_tt *pThis, uchar* pszMSG, int lenMSG);
+uchar *MsgGetProp(msg_tt *pMsg, struct templateEntry *pTpe,
                  propid_t propID, size_t *pPropLen, unsigned short *pbMustBeFreed);
 char *textpri(char *pRes, size_t pResLen, int pri);
-rsRetVal msgGetMsgVar(msg_t *pThis, cstr_t *pstrPropName, var_t **ppVar);
+rsRetVal msgGetMsgVar(msg_tt *pThis, cstr_t *pstrPropName, var_t **ppVar);
 rsRetVal MsgEnableThreadSafety(void);
-uchar *getRcvFrom(msg_t *pM);
-void getTAG(msg_t *pM, uchar **ppBuf, int *piLen);
-char *getTimeReported(msg_t *pM, enum tplFormatTypes eFmt);
-char *getPRI(msg_t *pMsg);
+uchar *getRcvFrom(msg_tt *pM);
+void getTAG(msg_tt *pM, uchar **ppBuf, int *piLen);
+char *getTimeReported(msg_tt *pM, enum tplFormatTypes eFmt);
+char *getPRI(msg_tt *pMsg);
 
 
 /* TODO: remove these five (so far used in action.c) */
-uchar *getMSG(msg_t *pM);
-char *getHOSTNAME(msg_t *pM);
-char *getPROCID(msg_t *pM, sbool bLockMutex);
-char *getAPPNAME(msg_t *pM, sbool bLockMutex);
-int getMSGLen(msg_t *pM);
+uchar *getMSG(msg_tt *pM);
+char *getHOSTNAME(msg_tt *pM);
+char *getPROCID(msg_tt *pM, sbool bLockMutex);
+char *getAPPNAME(msg_tt *pM, sbool bLockMutex);
+int getMSGLen(msg_tt *pM);
 
-char *getHOSTNAME(msg_t *pM);
-int getHOSTNAMELen(msg_t *pM);
-uchar *getProgramName(msg_t *pM, sbool bLockMutex);
-int getProgramNameLen(msg_t *pM, sbool bLockMutex);
-uchar *getRcvFrom(msg_t *pM);
+char *getHOSTNAME(msg_tt *pM);
+int getHOSTNAMELen(msg_tt *pM);
+uchar *getProgramName(msg_tt *pM, sbool bLockMutex);
+int getProgramNameLen(msg_tt *pM, sbool bLockMutex);
+uchar *getRcvFrom(msg_tt *pM);
 rsRetVal propNameToID(cstr_t *pCSPropName, propid_t *pPropID);
 uchar *propIDToName(propid_t propID);
 
@@ -195,7 +195,7 @@ uchar *propIDToName(propid_t propID);
  * The important thing is that no other module is permitted to actually
  * access that global variable! -- rgerhards, 2008-01-05
  */
-extern void (*funcMsgPrepareEnqueue)(msg_t *pMsg);
+extern void (*funcMsgPrepareEnqueue)(msg_tt *pMsg);
 #define MsgPrepareEnqueue(pMsg) funcMsgPrepareEnqueue(pMsg)
 
 
@@ -208,7 +208,7 @@ extern void (*funcMsgPrepareEnqueue)(msg_t *pMsg);
  * rgerhards, 2009-08-26
  */
 static inline void
-MsgSetRawMsgSize(msg_t *pMsg, size_t newLen)
+MsgSetRawMsgSize(msg_tt *pMsg, size_t newLen)
 {
 	assert(newLen <= (size_t) pMsg->iLenRawMsg);
 	pMsg->iLenRawMsg = newLen;
@@ -219,7 +219,7 @@ MsgSetRawMsgSize(msg_t *pMsg, size_t newLen)
  * May be NULL. -- rgerhards, 2009-10-27
  */
 static inline ruleset_t*
-MsgGetRuleset(msg_t *pMsg)
+MsgGetRuleset(msg_tt *pMsg)
 {
 	return pMsg->pRuleset;
 }

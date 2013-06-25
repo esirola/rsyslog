@@ -197,7 +197,7 @@ filePrepare(file_t *pFile)
 		FINALIZE;
 
 	/* file does not exist, create it (and eventually parent directories */
-	if(1) { // check if bCreateDirs
+	if(1) { 
 		len = ustrlen(pFile->name) + 1;
 		CHKmalloc(pszWork = MALLOC(sizeof(uchar) * len));
 		memcpy(pszWork, pFile->name, len);

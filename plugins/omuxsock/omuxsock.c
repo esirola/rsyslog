@@ -86,7 +86,7 @@ closeSocket(instanceData *pData)
 		close(pData->sock);
 		pData->sock = INVLD_SOCK;
 	}
-pData->bIsConnected = 0; // TODO: remove this variable altogether
+pData->bIsConnected = 0; 
 	RETiRet;
 }
 

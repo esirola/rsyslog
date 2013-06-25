@@ -32,7 +32,7 @@ struct template {
 	struct template *pNext;
 	char *pszName;
 	int iLenName;
-	rsRetVal (*pStrgen)(msg_t*, uchar**, size_t *);	/* name of strgen to use (bound if non-NULL!) */
+	rsRetVal (*pStrgen)(msg_tt*, uchar**, size_t *);	/* name of strgen to use (bound if non-NULL!) */
 	int tpenElements; /* number of elements in templateEntry list */
 	struct templateEntry *pEntryRoot;
 	struct templateEntry *pEntryLast;
@@ -128,8 +128,8 @@ rsRetVal ExtendBuf(uchar **pBuf, size_t *pLenBuf, size_t iMinSize);
  * BEFORE msg.h, even if your code file does not actually need it.
  * rgerhards, 2007-08-06
  */
-rsRetVal tplToArray(struct template *pTpl, msg_t *pMsg, uchar*** ppArr);
-rsRetVal tplToString(struct template *pTpl, msg_t *pMsg, uchar** ppSz, size_t *);
+rsRetVal tplToArray(struct template *pTpl, msg_tt *pMsg, uchar*** ppArr);
+rsRetVal tplToString(struct template *pTpl, msg_tt *pMsg, uchar** ppSz, size_t *);
 rsRetVal doSQLEscape(uchar **pp, size_t *pLen, unsigned short *pbMustBeFreed, int escapeMode);
 
 rsRetVal templateInit();

@@ -33,7 +33,11 @@
 #include <string.h>
 #include <unistd.h>
 #include <signal.h>
+#if 0 
 #include <getopt.h>
+#endif
+/*AIXPORT */
+#include <socket.h>
 #include <sys/un.h>
 #include <netdb.h>
  

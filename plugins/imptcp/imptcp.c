@@ -128,7 +128,7 @@ struct ptcpsess_s {
 	ptcpsess_t *prev, *next;
 	int sock;
 	epolld_t *epd;
-//--- from tcps_sess.h
+/*--- from tcps_sess.h  */
 	int iMsg;		 /* index of next char to store in msg */
 	int bAtStrtOfFram;	/* are we at the very beginning of a new frame? */
 	enum {
@@ -141,7 +141,7 @@ struct ptcpsess_s {
 	uchar *pMsg;		/* message (fragment) received */
 	prop_t *peerName;	/* host name we received messages from */
 	prop_t *peerIP;
-//--- END from tcps_sess.h
+/*--- END from tcps_sess.h */
 };
 
 
@@ -172,7 +172,7 @@ struct epolld_s {
 
 
 /* global data */
-//static permittedPeers_t *pPermPeersRoot = NULL;
+/*static permittedPeers_t *pPermPeersRoot = NULL; */
 static ptcpsrv_t *pSrvRoot = NULL;
 static int epollfd = -1;			/* (sole) descriptor for epoll */
 static int iMaxLine; /* maximum size of a single message */
@@ -299,11 +299,13 @@ startupSrv(ptcpsrv_t *pSrv)
 			continue;
 		}
 
-
-
 		/* We need to enable BSD compatibility. Otherwise an attacker
 		 * could flood our log files by sending us tons of ICMP errors.
 		 */
+/* AIXPORT : SO_BSDCOMPAT socket option is depricated.AIX does not support this option 
+             hence remove the call.
+*/
+#if !defined (_AIX)
 #ifndef BSD	
 		if(net.should_use_so_bsdcompat()) {
 			if (setsockopt(sock, SOL_SOCKET, SO_BSDCOMPAT,
@@ -314,6 +316,7 @@ startupSrv(ptcpsrv_t *pSrv)
 				continue;
 			}
 		}
+#endif
 #endif
 
 	        if( (bind(sock, r->ai_addr, r->ai_addrlen) < 0)
@@ -492,7 +495,7 @@ finalize_it:
 static rsRetVal
 doSubmitMsg(ptcpsess_t *pThis, struct syslogTime *stTime, time_t ttGenTime, multi_submit_t *pMultiSub)
 {
-	msg_t *pMsg;
+	msg_tt *pMsg;
 	DEFiRet;
 
 	if(pThis->iMsg == 0) {
@@ -640,7 +643,7 @@ static rsRetVal
 DataRcvd(ptcpsess_t *pThis, char *pData, size_t iLen)
 {
 	multi_submit_t multiSub;
-	msg_t *pMsgs[NUM_MULTISUB];
+	msg_tt *pMsgs[NUM_MULTISUB];
 	struct syslogTime stTime;
 	time_t ttGenTime;
 	char *pEnd;
@@ -818,9 +821,11 @@ closeSess(ptcpsess_t *pSess)
 	close(sock);
 
 	/* finally unlink session from structures */
-//fprintf(stderr, "closing session %d next %p, prev %p\n", pSess->sock, pSess->next, pSess->prev);
-//DBGPRINTF("imptcp: pSess->next %p\n", pSess->next);
-//DBGPRINTF("imptcp: pSess->prev %p\n", pSess->prev);
+/*
+fprintf(stderr, "closing session %d next %p, prev %p\n", pSess->sock, pSess->next, pSess->prev);
+DBGPRINTF("imptcp: pSess->next %p\n", pSess->next);
+DBGPRINTF("imptcp: pSess->prev %p\n", pSess->prev);
+*/
 	if(pSess->next != NULL)
 		pSess->next->prev = pSess->prev;
 	if(pSess->prev == NULL) {
@@ -1039,7 +1044,7 @@ ENDrunInput
 BEGINwillRun
 CODESTARTwillRun
 	/* first apply some config settings */
-	//net.PrintAllowedSenders(2); /* TCP */
+	/*net.PrintAllowedSenders(2);*/  /* TCP */
 	iMaxLine = glbl.GetMaxLine(); /* get maximum size we currently support */
 
 	if(pSrvRoot == NULL) {
@@ -1109,7 +1114,7 @@ BEGINafterRun
 	ptcpsrv_t *pSrv, *srvDel;
 CODESTARTafterRun
 	/* do cleanup here */
-	//net.clearAllowedSenders(UCHAR_CONSTANT("TCP"));
+	/*net.clearAllowedSenders(UCHAR_CONSTANT("TCP")); */
 	/* we need to close everything that is still open */
 	pSrv = pSrvRoot;
 	while(pSrv != NULL) {

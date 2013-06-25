@@ -71,7 +71,7 @@ isPermittedHost(struct sockaddr *addr, char *fromHostFQDN, void __attribute__((u
 	return net.isAllowedSender(net.pAllowedSenders_TCP, addr, fromHostFQDN);
 }
 
-#endif // #if 0
+#endif 
 
 /* callback for receiving syslog messages. This function is invoked from the
  * RELP engine when a syslog message arrived. It must return a relpRetVal,

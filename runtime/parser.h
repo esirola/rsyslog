@@ -57,8 +57,8 @@ BEGINinterface(parser) /* name must also be changed in ENDinterface macro! */
 	rsRetVal (*DestructParserList)(parserList_t **pListRoot);
 	rsRetVal (*AddParserToList)(parserList_t **pListRoot, parser_t *pParser);
 	/* static functions */
-	rsRetVal (*ParseMsg)(msg_t *pMsg);
-	rsRetVal (*SanitizeMsg)(msg_t *pMsg);
+	rsRetVal (*ParseMsg)(msg_tt *pMsg);
+	rsRetVal (*SanitizeMsg)(msg_tt *pMsg);
 	rsRetVal (*AddDfltParser)(uchar *);
 ENDinterface(parser)
 #define parserCURR_IF_VERSION 1 /* increment whenever you change the interface above! */

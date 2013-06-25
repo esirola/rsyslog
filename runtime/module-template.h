@@ -637,7 +637,7 @@ static rsRetVal doHUP(instanceData __attribute__((unused)) *pData)\
 /* parse() - main entry point of parser modules
  */
 #define BEGINparse \
-static rsRetVal parse(msg_t *pMsg)\
+static rsRetVal parse(msg_tt *pMsg)\
 {\
 	DEFiRet;
 
@@ -652,7 +652,7 @@ static rsRetVal parse(msg_t *pMsg)\
 /* strgen() - main entry point of parser modules
  */
 #define BEGINstrgen \
-static rsRetVal strgen(msg_t *pMsg, uchar **ppBuf, size_t *pLenBuf) \
+static rsRetVal strgen(msg_tt *pMsg, uchar **ppBuf, size_t *pLenBuf) \
 {\
 	DEFiRet;
 

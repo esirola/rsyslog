@@ -76,6 +76,10 @@
 #ifdef OS_SOLARIS
 #	define NAME_MAX MAXNAMELEN
 #endif
+/* AIXPORT : Define NAME_MAX  */
+#if defined (_AIX)
+#define NAME_MAX         255    /* # chars in a file name */
+#endif
 
 /* forward definitions */
 static rsRetVal cfline(uchar *line, rule_t **pfCurr);
@@ -390,6 +394,93 @@ finalize_it:
 
 
 
+
+#if defined (_AIX)
+
+
+/* AIXPORT : Remove aix-syslog speciifc keywords from the conf file line. 
+ *           This helps in easy adoption of Rsyslog, as Customers can include their 
+ *           existing aix-syslog based conf file into the rsyslog.conf file, without errors.
+ * Return Value : Returns 'true' on success.
+ */
+static size_t 
+aixsyslogkeyword(uchar *line, uchar *pConfFile, int iLnNbr)
+{
+	char arr[3] = {' ', '\t', NULL};  /* One space and a tab */
+	char *sep =  arr; 
+	char *word = NULL, *ctx = NULL, *str = NULL, *orig = NULL, *loc = NULL; 
+	int i = 0;
+
+	
+	if((str = (char *) malloc(strlen(line) + 1)) == NULL)
+		return -1;
+	if((orig = (char *) malloc(strlen(line) + 1)) == NULL)
+	{
+		free(str);
+		return -1;
+	}
+
+        /* Following aix-syslogd specific keywords follow 'rotate' :
+	 * "perm", "files", "size", "compress", "archive", "time"
+	 *
+	 * We need to search for only "centralizedlog", "rotate" and "filter"
+	 */
+
+	/* Discard the comment, as we dont want it to interfere with the string processing */
+	if(loc = strchr(line, '#'))
+		*loc = NULL; 
+
+	/* make a copy for creating tokens */
+	strcpy(str, line);
+	/* copy for error message */
+	strcpy(orig, line); 
+	*line = NULL;
+
+	/* Start picking tokens and adding them to 'line' if applicable */
+        for (word = strtok_r(str, sep, &ctx); word; word = strtok_r(NULL, sep, &ctx))
+        {
+		uchar msgbuf[PATH_MAX + 512];
+
+		/* Check for "centralizedlog" */
+		if(!strcmp(word, "centralizedlog"))
+		{
+			
+			/* We need to discard this line */
+			sprintf(msgbuf, " Line No:%d: conf file:%s: Ignoring aix-syslog specific Line as shown below", iLnNbr, pConfFile);
+			logmsgInternal(NO_ERRCODE, LOG_SYSLOG|LOG_INFO, msgbuf, 0);
+			sprintf(msgbuf, " Line Discarded : %s", orig);
+			logmsgInternal(NO_ERRCODE, LOG_SYSLOG|LOG_INFO, msgbuf, 0);
+
+			*line = NULL;
+			goto exit;
+		}
+		/* Check for "rotate" or "filter" */
+		if(!strcmp(word, "rotate") || !strcmp(word, "filter"))
+		{
+			/* We need to discard the remaining segment */
+			sprintf(msgbuf, " Line No:%d: conf file:%s: Ignoring aix-syslog specific Keywords as shown below", iLnNbr, pConfFile);
+			logmsgInternal(NO_ERRCODE, LOG_SYSLOG|LOG_INFO, msgbuf, 0);
+			sprintf(msgbuf, " Line in the conf file : %s", orig);
+			logmsgInternal(NO_ERRCODE, LOG_SYSLOG|LOG_INFO, msgbuf, 0);
+			sprintf(msgbuf, " Line after Ignoring Keywords : %s", line);
+			logmsgInternal(NO_ERRCODE, LOG_SYSLOG|LOG_INFO, msgbuf, 0);
+
+			goto exit;
+		}
+
+		/* This is a valid token now Add the token back to the line */
+		strcat(line, word);
+		strcat(line, " ");
+        }
+
+exit:
+	free(str);
+	free(orig);
+	return 0;
+}
+#endif
+
+
 /* process a configuration file
  * started with code from init() by rgerhards on 2007-07-31
  */
@@ -419,10 +510,11 @@ processConfFile(uchar *pConfFile)
 	while (fgets((char*)cline, sizeof(cbuf) - (cline - cbuf), cf) != NULL) {
 		++iLnNbr;
 		/* drop LF - TODO: make it better, replace fgets(), but its clean as it is */
-		lenLine = ustrlen(cline);
+		lenLine = ustrlen(cline); 
 		if(cline[lenLine-1] == '\n') {
 			cline[lenLine-1] = '\0';
 		}
+
 		free(pszOrgLine);
 		pszOrgLine = ustrdup(cline); /* save if needed for errmsg, NULL ptr is OK */
 		/* check for end-of-section, comments, strip off trailing
@@ -433,6 +525,14 @@ processConfFile(uchar *pConfFile)
 		if (*p == '\0' || *p == '#')
 			continue;
 
+#if defined (_AIX)
+		/* AIXPORT : cleanup aix-syslog speciifc keywords from the conf file line */
+		/* We dont have '$' symbol in aix-syslog.conf file */
+		if (*p != '$')
+			if(aixsyslogkeyword(p, pConfFile, iLnNbr) == -1)
+				bHadAnError = 1;
+			
+#endif
 		/* we now need to copy the characters to the begin of line. As this overlaps,
 		 * we can not use strcpy(). -- rgerhards, 2008-03-20
 		 * TODO: review the code at whole - this is highly suspect (but will go away
@@ -1175,6 +1275,8 @@ cflineClassic(uchar *p, rule_t **ppRule)
 finalize_it:
 	RETiRet;
 }
+
+
 
 
 /* process a configuration line

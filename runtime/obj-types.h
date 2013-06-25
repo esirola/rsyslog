@@ -295,7 +295,7 @@ rsRetVal objName##ClassExit(void) \
 
 /* note: there was a long-time bug in the macro below that lead to *ppThis = NULL
  * only when the object was actually destructed. I discovered this issue during 
- * introduction of the pRcvFrom property in msg_t, but it potentially had other
+ * introduction of the pRcvFrom property in msg_tt, but it potentially had other
  * effects, too. I am not sure if some experienced instability resulted from this
  * bug OR if its fix will cause harm to so-far "correctly" running code. The later
  * may very well be. Thus I will change it only for the current branch and also

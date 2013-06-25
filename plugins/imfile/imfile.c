@@ -105,7 +105,7 @@ static prop_t *pInputName = NULL;	/* there is only one global inputName for all 
 static rsRetVal enqLine(fileInfo_t *pInfo, cstr_t *cstrLine)
 {
 	DEFiRet;
-	msg_t *pMsg;
+	msg_tt *pMsg;
 
 	if(rsCStrLen(cstrLine) == 0) {
 		/* we do not process empty lines */
@@ -202,7 +202,10 @@ static void pollFileCancelCleanup(void *pArg)
 
 
 /* poll a file, need to check file rollover etc. open file if not open */
-#pragma GCC diagnostic ignored "-Wempty-body"
+/*  AIXPORT : gcc pragma ignored */
+#ifndef _AIX
+	#pragma GCC diagnostic ignored  "-Wempty-body"
+#endif
 static rsRetVal pollFile(fileInfo_t *pThis, int *pbHadFileData)
 {
 	cstr_t *pCStr = NULL;
@@ -247,7 +250,10 @@ finalize_it:
 
 	RETiRet;
 }
-#pragma GCC diagnostic warning "-Wempty-body"
+/*  AIXPORT : gcc pragma ignored */
+#ifndef _AIX
+	#pragma GCC diagnostic warning "-Wempty-body" 
+#endif
 
 
 /* This function is the cancel cleanup handler. It is called when rsyslog decides the
@@ -289,7 +295,10 @@ inputModuleCleanup(void __attribute__((unused)) *arg)
  * On spamming the main queue: keep in mind that it will automatically rate-limit
  * ourselfes if we begin to overrun it. So we really do not need to care here.
  */
-#pragma GCC diagnostic ignored "-Wempty-body"
+/*  AIXPORT : gcc pragma ignored */
+#ifndef _AIX
+	#pragma GCC diagnostic warning "-Wempty-body" 
+#endif
 BEGINrunInput
 	int i;
 	int bHadFileData; /* were there at least one file with data during this run? */
@@ -317,7 +326,10 @@ CODESTARTrunInput
 	pthread_cleanup_pop(0); /* just for completeness, but never called... */
 	RETiRet;	/* use it to make sure the housekeeping is done! */
 ENDrunInput
-#pragma GCC diagnostic warning "-Wempty-body"
+/*  AIXPORT : gcc pragma ignored */
+#ifndef _AIX
+	#pragma GCC diagnostic warning "-Wempty-body" 
+#endif
 	/* END no-touch zone                                                                          *
 	 * ------------------------------------------------------------------------------------------ */
 

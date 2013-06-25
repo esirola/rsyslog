@@ -550,7 +550,10 @@ if(pLog == NULL) {
 	return; /* if we don't know it yet, we can not clean up... */
 }
 #endif
+/* AIXPORT : syscall.h include removed */
+#ifndef _AIX
 #include <sys/syscall.h>
+#endif
 
 	/* we found the last lock entry. We now need to see from which FuncDB we need to
 	 * remove it. This is recorded inside the mutex log entry.
@@ -591,10 +594,10 @@ int dbgMutexTryLock(pthread_mutex_t *pmut, dbgFuncDB_t *pFuncDB, int ln, int iSt
    int ret;
 
    dbgRecordExecLocation(iStackPtr, ln);
-   dbgMutexPreLockLog(pmut, pFuncDB, ln); // TODO : update this
+   dbgMutexPreLockLog(pmut, pFuncDB, ln); // TODO : update this 
    ret = pthread_mutex_trylock(pmut);
    if(ret == 0 || ret == EBUSY) {
-      // TODO : update this
+      // TODO : update this 
       dbgMutexLockLog(pmut, pFuncDB, ln);
    } else {
       dbgprintf("%s:%d:%s: ERROR: pthread_mutex_trylock() for mutex %p failed with error %d\n",
@@ -904,7 +907,10 @@ do_dbgprint(uchar *pszObjName, char *pszMsg, size_t lenMsg)
 	bWasNL = (pszMsg[lenMsg - 1] == '\n') ? 1 : 0;
 }
 
-#pragma GCC diagnostic ignored "-Wempty-body"
+/* AIXPORT :gcc pragma removed */
+#ifndef _AIX
+	#pragma GCC diagnostic ignored "-Wempty-body"
+#endif
 /* write the debug message. This is a helper to dbgprintf and dbgoprint which
  * contains common code. added 2008-09-26 rgerhards
  */
@@ -930,7 +936,10 @@ dbgprint(obj_t *pObj, char *pszMsg, size_t lenMsg)
 
 	pthread_cleanup_pop(1);
 }
-#pragma GCC diagnostic warning "-Wempty-body"
+/* AIXPORT :gcc pragma removed */
+#ifndef _AIX
+	#pragma GCC diagnostic ignored "-Wempty-body"
+#endif
 
 /* print some debug output when an object is given
  * This is mostly a copy of dbgprintf, but I do not know how to combine it

@@ -46,7 +46,9 @@
 #include <glob.h>
 #include <signal.h>
 #include <netinet/in.h>
+#if 0
 #include <getopt.h>
+#endif
 #include <errno.h>
 #include <ctype.h>
 

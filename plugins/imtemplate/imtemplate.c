@@ -240,7 +240,7 @@ CODESTARTrunInput
 		 * does not need to be parsed, for example when reading text (log) files. In that way,
 		 * we can set the message properties as of our liking. This is how it works:
 		 *
-		msg_t *pMsg;
+		msg_tt *pMsg;
 		CHKiRet(msgConstruct(&pMsg));
 		MsgSetRawMsg(pMsg, msg);
 		MsgSetHOSTNAME(pMsg, LocalHostName);

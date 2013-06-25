@@ -32,7 +32,7 @@
 #include "rsyslog.h"
 #include "module-template.h"
 #include "obj.h"
-//#include "errmsg.h"
+// #include "errmsg.h"
 #include "nsd.h"
 #include "netstrm.h"
 #include "nssel.h"
@@ -44,7 +44,7 @@ MODULE_TYPE_NOKEEP
 
 /* static data */
 DEFobjStaticHelpers
-//DEFobjCurrIf(errmsg)
+// DEFobjCurrIf(errmsg)
 DEFobjCurrIf(glbl)
 DEFobjCurrIf(netstrm)
 

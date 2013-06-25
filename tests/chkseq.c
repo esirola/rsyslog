@@ -33,7 +33,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#if 0
 #include <getopt.h>
+#endif
 
 int main(int argc, char *argv[])
 {

@@ -96,7 +96,7 @@ static rsRetVal
 enqMsg(uchar *msg, uchar* pszTag, int iFacility, int iSeverity)
 {
 	DEFiRet;
-	msg_t *pMsg;
+	msg_tt *pMsg;
 
 	assert(msg != NULL);
 	assert(pszTag != NULL);

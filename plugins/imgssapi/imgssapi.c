@@ -416,7 +416,7 @@ OnSessAcceptGSS(tcpsrv_t *pThis, tcps_sess_t *pSess)
 
 		dbgprintf("GSS-API Trying to accept TCP session %p\n", pSess);
 
-		CHKiRet(netstrm.GetSock(pSess->pStrm, &fdSess)); // TODO: method access!
+		CHKiRet(netstrm.GetSock(pSess->pStrm, &fdSess)); 
 		if (allowedMethods & ALLOWEDMETHOD_TCP) {
 			int len;
 			struct timeval tv;
@@ -436,11 +436,11 @@ OnSessAcceptGSS(tcpsrv_t *pThis, tcps_sess_t *pSess)
 			} while (ret < 0 && errno == EINTR);
 			if (ret < 0) {
 				errmsg.LogError(0, RS_RET_ERR, "TCP session %p will be closed, error ignored\n", pSess);
-				ABORT_FINALIZE(RS_RET_ERR); // TODO: define good error codes
+				ABORT_FINALIZE(RS_RET_ERR); 
 			} else if (ret == 0) {
 				dbgprintf("GSS-API Reverting to plain TCP\n");
 				pGSess->allowedMethods = ALLOWEDMETHOD_TCP;
-				ABORT_FINALIZE(RS_RET_OK); // TODO: define good error codes
+				ABORT_FINALIZE(RS_RET_OK); 
 			}
 
 			do {
@@ -451,13 +451,13 @@ OnSessAcceptGSS(tcpsrv_t *pThis, tcps_sess_t *pSess)
 					dbgprintf("GSS-API Connection closed by peer\n");
 				else
 					errmsg.LogError(0, RS_RET_ERR, "TCP(GSS) session %p will be closed, error ignored\n", pSess);
-				ABORT_FINALIZE(RS_RET_ERR); // TODO: define good error codes
+				ABORT_FINALIZE(RS_RET_ERR); 
 			}
 
 			if (ret < 4) {
 				dbgprintf("GSS-API Reverting to plain TCP\n");
 				pGSess->allowedMethods = ALLOWEDMETHOD_TCP;
-				ABORT_FINALIZE(RS_RET_OK); // TODO: define good error codes
+				ABORT_FINALIZE(RS_RET_OK); 
 			} else if (ret == 4) {
 				/* The client might has been interupted after sending
 				 * the data length (4B), give him another chance.
@@ -471,7 +471,7 @@ OnSessAcceptGSS(tcpsrv_t *pThis, tcps_sess_t *pSess)
 						dbgprintf("GSS-API Connection closed by peer\n");
 					else
 						errmsg.LogError(0, NO_ERRCODE, "TCP session %p will be closed, error ignored\n", pSess);
-					ABORT_FINALIZE(RS_RET_ERR); // TODO: define good error codes
+					ABORT_FINALIZE(RS_RET_ERR); 
 				}
 			}
 
@@ -483,7 +483,7 @@ OnSessAcceptGSS(tcpsrv_t *pThis, tcps_sess_t *pSess)
 			if ((ret - 4) < len || len == 0) {
 				dbgprintf("GSS-API Reverting to plain TCP\n");
 				pGSess->allowedMethods = ALLOWEDMETHOD_TCP;
-				ABORT_FINALIZE(RS_RET_OK); // TODO: define good error codes
+				ABORT_FINALIZE(RS_RET_OK); 
 			}
 
                         freeFdSet(pFds);
@@ -495,7 +495,7 @@ OnSessAcceptGSS(tcpsrv_t *pThis, tcps_sess_t *pSess)
 		do {
 			if (gssutil.recv_token(fdSess, &recv_tok) <= 0) {
 				errmsg.LogError(0, NO_ERRCODE, "TCP session %p will be closed, error ignored\n", pSess);
-				ABORT_FINALIZE(RS_RET_ERR); // TODO: define good error codes
+				ABORT_FINALIZE(RS_RET_ERR); 
 			}
 			maj_stat = gss_accept_sec_context(&acc_sec_min_stat, context, gss_server_creds,
 							  &recv_tok, GSS_C_NO_CHANNEL_BINDINGS, &client,
@@ -515,13 +515,13 @@ OnSessAcceptGSS(tcpsrv_t *pThis, tcps_sess_t *pSess)
 					if(tcps_sess.DataRcvd(pSess, buf, ret) != RS_RET_OK) {
 						errmsg.LogError(0, NO_ERRCODE, "Tearing down TCP Session %p - see "
 							    "previous messages for reason(s)\n", pSess);
-						ABORT_FINALIZE(RS_RET_ERR); // TODO: define good error codes
+						ABORT_FINALIZE(RS_RET_ERR); 
 					}
 					pGSess->allowedMethods = ALLOWEDMETHOD_TCP;
-					ABORT_FINALIZE(RS_RET_OK); // TODO: define good error codes
+					ABORT_FINALIZE(RS_RET_OK); 
 				}
 				gssutil.display_status("accepting context", maj_stat, acc_sec_min_stat);
-				ABORT_FINALIZE(RS_RET_ERR); // TODO: define good error codes
+				ABORT_FINALIZE(RS_RET_ERR); 
 			}
 			if (send_tok.length != 0) {
 				if(gssutil.send_token(fdSess, &send_tok) < 0) {
@@ -529,7 +529,7 @@ OnSessAcceptGSS(tcpsrv_t *pThis, tcps_sess_t *pSess)
 					errmsg.LogError(0, NO_ERRCODE, "TCP session %p will be closed, error ignored\n", pSess);
 					if (*context != GSS_C_NO_CONTEXT)
 						gss_delete_sec_context(&min_stat, context, GSS_C_NO_BUFFER);
-					ABORT_FINALIZE(RS_RET_ERR); // TODO: define good error codes
+					ABORT_FINALIZE(RS_RET_ERR); 
 				}
 				gss_release_buffer(&min_stat, &send_tok);
 			}
@@ -570,7 +570,7 @@ int TCPSessGSSRecv(tcps_sess_t *pSess, void *buf, size_t buf_len, ssize_t *piLen
 	assert(piLenRcvd != NULL);
 	pGSess = (gss_sess_t*) pSess->pUsr;
 
-	netstrm.GetSock(pSess->pStrm, &fdSess); // TODO: method access, CHKiRet!
+	netstrm.GetSock(pSess->pStrm, &fdSess); 
 	if ((state = gssutil.recv_token(fdSess, &xmit_buf)) <= 0)
 		ABORT_FINALIZE(RS_RET_GSS_ERR);
 
