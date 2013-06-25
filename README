@@ -1,5 +1,26 @@
-This file has been superseeded by the files in the doc folder.
-Please see doc/manual.html for futher details. If you are
-looking for install information doc/install.html is for you!
-If you do not have the doc set, see
-    http://www.rsyslog.com/doc
+READ THIS VERY CAREFULLY OR YOU'll END UP IN LICENSING HELL!
+
+Note: this is a special version that was ported by IBM. IBM released
+the patches under GPLv3+, so all code -even ones that claim differently-
+is under GPLv3+ (as long as it contains code from the IBM commit).
+
+Newer rsyslog versions contain files that are under ASL 2.0. It is
+a long-term goal of the project to change the license (at least for
+almost all files). If you now merge IBM's contribution back into
+those higher versions, files again get infected by GPLv3, and as
+IBM has not agreed to license the patch set under ASL 2.0, we would
+never have a chance to reach our licensing goal. As such, it is
+FORBIDDEN to use any code found in this branch and merge,
+copy and paste, remember and rewrite, ... (whatever) inside newer
+rsyslog versions. For the same reason, the rsyslog team has never
+looked at this code (except for the quick merge) and will not do
+so. This helps all users by preventing accidential infection.
+
+Please use this code at your own risk. The rsyslog project does NOT
+support this version.
+
+Beside these restrictions, we thank the IBM team for making a version
+of rsyslog available on AIX.
+
+Rainer Gerhards,
+2013-06-25
