@@ -1,22 +1,8 @@
----------------------------------------------------------------------------
-Version 7.4.2  [v7.4-stable] 2013-06-??
-- bugfix: in RFC5425 TLS, multiple wildcards in auth could cause segfault
-- bugfix: RainerScript object required parameters were not properly
-  checked - this clould result to segfaults on startup if parameters
-  were missing.
-- bugfix: omrelp potential segfault at startup on invalid config parameters
-- bugfix: small memory leak when $uptime property was used
-- bugfix: potential segfault on rsyslog termination in imudp
-  closes: http://bugzilla.adiscon.com/show_bug.cgi?id=456
-- bugfix: lmsig_gt abort on invalid configuration parameters
-  closes: http://bugzilla.adiscon.com/show_bug.cgi?id=448
-  Thanks to Risto Laanoja for the patch.
-- imtcp: fix typo in "listner" parameter, which is "listener"
-  Currently, both names are accepted.
-- solved build problems on FreeBSD
-  closes: http://bugzilla.adiscon.com/show_bug.cgi?id=457
-  closes: http://bugzilla.adiscon.com/show_bug.cgi?id=458
-  Thanks to Christiano for reproting and suggesting patches
+   SPECIAL PATCHES
+   - librelp 1.1.4 is now required
+     We use API extensions for better error reporting and higher performance.
+   - omrelp: use transactional mode to make imrelp emit bulk sends
+**** END SPECIAL PATCHES ****
 ---------------------------------------------------------------------------
 Version 7.4.1  [v7.4-stable] 2013-06-17
 - imjournal: add ratelimiting capability
