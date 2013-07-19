@@ -128,9 +128,9 @@ BEGINobjConstruct(rsconf) /* be sure to specify the object type also in END macr
 			rulesetKeyDestruct, strcasecmp));
 	/* queue params */
 	pThis->globals.mainQ.iMainMsgQueueSize = 10000;
-	pThis->globals.mainQ.iMainMsgQHighWtrMark = 8000;
-	pThis->globals.mainQ.iMainMsgQLowWtrMark = 2000;
-	pThis->globals.mainQ.iMainMsgQDiscardMark = 9800;
+	pThis->globals.mainQ.iMainMsgQHighWtrMark = -1;
+	pThis->globals.mainQ.iMainMsgQLowWtrMark = -1;
+	pThis->globals.mainQ.iMainMsgQDiscardMark = -1;
 	pThis->globals.mainQ.iMainMsgQDiscardSeverity = 8;
 	pThis->globals.mainQ.iMainMsgQueueNumWorkers = 1;
 	pThis->globals.mainQ.MainMsgQueType = QUEUETYPE_FIXED_ARRAY;
@@ -964,9 +964,9 @@ static rsRetVal resetConfigVariables(uchar __attribute__((unused)) *pp, void __a
 	free(loadConf->globals.mainQ.pszMainMsgQFName);
 	loadConf->globals.mainQ.pszMainMsgQFName = NULL;
 	loadConf->globals.mainQ.iMainMsgQueueSize = 10000;
-	loadConf->globals.mainQ.iMainMsgQHighWtrMark = 8000;
-	loadConf->globals.mainQ.iMainMsgQLowWtrMark = 2000;
-	loadConf->globals.mainQ.iMainMsgQDiscardMark = 9800;
+	loadConf->globals.mainQ.iMainMsgQHighWtrMark = -1;
+	loadConf->globals.mainQ.iMainMsgQLowWtrMark = -1;
+	loadConf->globals.mainQ.iMainMsgQDiscardMark = -1;
 	loadConf->globals.mainQ.iMainMsgQDiscardSeverity = 8;
 	loadConf->globals.mainQ.iMainMsgQueMaxFileSize = 1024 * 1024;
 	loadConf->globals.mainQ.iMainMsgQueueNumWorkers = 1;

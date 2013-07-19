@@ -253,9 +253,9 @@ actionResetQueueParams(void)
 	cs.ActionQueType = QUEUETYPE_DIRECT;		/* type of the main message queue above */
 	cs.iActionQueueSize = 1000;			/* size of the main message queue above */
 	cs.iActionQueueDeqBatchSize = 16;		/* default batch size */
-	cs.iActionQHighWtrMark = 800;			/* high water mark for disk-assisted queues */
-	cs.iActionQLowWtrMark = 200;			/* low water mark for disk-assisted queues */
-	cs.iActionQDiscardMark = 980;			/* begin to discard messages */
+	cs.iActionQHighWtrMark = -1;			/* high water mark for disk-assisted queues */
+	cs.iActionQLowWtrMark = -1;			/* low water mark for disk-assisted queues */
+	cs.iActionQDiscardMark = -1;			/* begin to discard messages */
 	cs.iActionQDiscardSeverity = 8;			/* discard warning and above */
 	cs.iActionQueueNumWorkers = 1;			/* number of worker threads for the mm queue above */
 	cs.iActionQueMaxFileSize = 1024*1024;

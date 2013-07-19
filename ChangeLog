@@ -1,5 +1,26 @@
 ---------------------------------------------------------------------------
 Version 7.4.3  [v7.4-stable] 2013-07-18
+- bugfix and CHANGE OF BEHAVIOUR for queue watermarks
+  The queue high, low and discard watermarks needed to be set explicitely
+  when the queue size was modified. Otherwise, the queue run with fixed
+  absolute values, which were almost always unsuitable. Most often, they
+  were far to low and lead to making a DA queue go to disk far too early.
+  In this case, the rest ot the memory queue size was still utilized, which
+  was probably a main reason why this usually had no bad effect (if a
+  queue needs to go to disk, performance of the queue drop significanly
+  if it actually runs out of in-memory buffers). This bug is present in
+  all version of rsyslog (well, it's not a "hard" bug, as previously it
+  was just considered "misconfiguration" - but the engine really should
+  take care of that...). This has now been changed so that the watermarks
+  are properly computed if not absolutely specified. This also results in
+  a change of behaiour, as the previous defaults were different based on
+  which type of queue it was and if it was defined by legac or RainerScript
+  statements. Now, the default for all queues is consistently:
+  high watermark: 85% of queue size
+  low  watermark: 30% of queue size
+  discard mark:   95% of queue size
+  Note that currently any values explicitely set are used as set (this may
+  change in the future to do some more sanity checks in that case)
 - bugfix: queue file size was not correctly processed
   this could lead to using one queue file per message for sizes >2GiB
   Thanks to Tomas Heinrich for the patch.

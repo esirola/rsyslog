@@ -1315,8 +1315,11 @@ rsRetVal qqueueConstruct(qqueue_t **ppThis, queueType_t qType, int iWorkerThread
 		ABORT_FINALIZE(RS_RET_OUT_OF_MEMORY);
 
 	/* set some water marks so that we have useful defaults if none are set specifically */
-	pThis->iFullDlyMrk  = -1;
+	pThis->iFullDlyMrk = -1;
 	pThis->iLightDlyMrk = -1;
+	pThis->iHighWtrMrk = -1;
+	pThis->iDiscardMrk = -1;
+	pThis->iLowWtrMrk = -1;
 	pThis->lenSpoolDir = ustrlen(pThis->pszSpoolDir);
 	pThis->iMaxFileSize = 1024 * 1024; /* default is 1 MiB */
 	pThis->iQueueSize = 0;
@@ -1353,9 +1356,9 @@ qqueueSetDefaultsActionQueue(qqueue_t *pThis)
 	pThis->qType = QUEUETYPE_DIRECT;	/* type of the main message queue above */
 	pThis->iMaxQueueSize = 1000;		/* size of the main message queue above */
 	pThis->iDeqBatchSize = 128; 		/* default batch size */
-	pThis->iHighWtrMrk = 800;		/* high water mark for disk-assisted queues */
-	pThis->iLowWtrMrk = 200;		/* low water mark for disk-assisted queues */
-	pThis->iDiscardMrk = 980;		/* begin to discard messages */
+	pThis->iHighWtrMrk = -1;			/* high water mark for disk-assisted queues */
+	pThis->iLowWtrMrk = -1;		/* low water mark for disk-assisted queues */
+	pThis->iDiscardMrk = -1;		/* begin to discard messages */
 	pThis->iDiscardSeverity = 8;		/* turn off */
 	pThis->iNumWorkerThreads = 1;		/* number of worker threads for the mm queue above */
 	pThis->iMaxFileSize = 1024*1024;
@@ -1383,9 +1386,9 @@ qqueueSetDefaultsRulesetQueue(qqueue_t *pThis)
 	pThis->qType = QUEUETYPE_FIXED_ARRAY;	/* type of the main message queue above */
 	pThis->iMaxQueueSize = 50000;		/* size of the main message queue above */
 	pThis->iDeqBatchSize = 1024; 		/* default batch size */
-	pThis->iHighWtrMrk = 45000;		/* high water mark for disk-assisted queues */
-	pThis->iLowWtrMrk = 20000;		/* low water mark for disk-assisted queues */
-	pThis->iDiscardMrk = 49500;		/* begin to discard messages */
+	pThis->iHighWtrMrk = -1;		/* high water mark for disk-assisted queues */
+	pThis->iLowWtrMrk = -1;			/* low water mark for disk-assisted queues */
+	pThis->iDiscardMrk = -1;		/* begin to discard messages */
 	pThis->iDiscardSeverity = 8;		/* turn off */
 	pThis->iNumWorkerThreads = 1;		/* number of worker threads for the mm queue above */
 	pThis->iMaxFileSize = 16*1024*1024;
@@ -2084,12 +2087,17 @@ qqueueStart(qqueue_t *pThis) /* this is the ConstructionFinalizer */
 			break;
 	}
 
+dbgprintf("DDDD: queueStartup, maxSize: %d\n", pThis->iMaxQueueSize);
 	if(pThis->iFullDlyMrk == -1)
-		pThis->iFullDlyMrk  = pThis->iMaxQueueSize
-			- (pThis->iMaxQueueSize / 100) *  3; /* default 97% */
+		pThis->iFullDlyMrk  = (pThis->iMaxQueueSize / 100) * 97;
 	if(pThis->iLightDlyMrk == -1)
-		pThis->iLightDlyMrk = pThis->iMaxQueueSize
-			- (pThis->iMaxQueueSize / 100) * 30; /* default 70% */
+		pThis->iLightDlyMrk = (pThis->iMaxQueueSize / 100) * 70;
+	if(pThis->iDiscardMrk == -1)
+		pThis->iDiscardMrk = (pThis->iMaxQueueSize / 100) * 95;
+	if(pThis->iHighWtrMrk == -1)
+		pThis->iHighWtrMrk  = (pThis->iMaxQueueSize / 100) * 85;
+	if(pThis->iLowWtrMrk == -1)
+		pThis->iLowWtrMrk = (pThis->iMaxQueueSize / 100) * 30;
 
 	/* we need to do a quick check if our water marks are set plausible. If not,
 	 * we correct the most important shortcomings. TODO: do that!!!! -- rgerhards, 2008-03-14
@@ -2127,11 +2135,12 @@ qqueueStart(qqueue_t *pThis) /* this is the ConstructionFinalizer */
 	}
 
 	DBGOPRINT((obj_t*) pThis, "type %d, enq-only %d, disk assisted %d, maxFileSz %lld, maxQSize %d, lqsize %d, pqsize %d, child %d, "
-				  "full delay %d, light delay %d, deq batch size %d starting, high wtrrmrk %d, low wtrmrk %d\n",
+				  "full delay %d, light delay %d, deq batch size %d starting, high wtrrmrk %d, low wtrmrk %d, "
+				  "discard mrk %d, discard sever %d\n",
 		  pThis->qType, pThis->bEnqOnly, pThis->bIsDA, pThis->iMaxFileSize, pThis->iMaxQueueSize,
 		  getLogicalQueueSize(pThis), getPhysicalQueueSize(pThis),
-		  pThis->pqParent == NULL ? 0 : 1, pThis->iFullDlyMrk, pThis->iLightDlyMrk,
-		  pThis->iDeqBatchSize, pThis->iHighWtrMrk, pThis->iLowWtrMrk);
+		  pThis->pqParent == NULL ? 0 : 1, pThis->iFullDlyMrk, pThis->iLightDlyMrk, pThis->iDeqBatchSize,
+		  pThis->iHighWtrMrk, pThis->iLowWtrMrk, pThis->iDiscardMrk, pThis->iDiscardSeverity);
 
 	pThis->bQueueStarted = 1;
 	if(pThis->qType == QUEUETYPE_DIRECT)
