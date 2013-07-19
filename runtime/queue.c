@@ -2087,7 +2087,6 @@ qqueueStart(qqueue_t *pThis) /* this is the ConstructionFinalizer */
 			break;
 	}
 
-dbgprintf("DDDD: queueStartup, maxSize: %d\n", pThis->iMaxQueueSize);
 	if(pThis->iFullDlyMrk == -1)
 		pThis->iFullDlyMrk  = (pThis->iMaxQueueSize / 100) * 97;
 	if(pThis->iLightDlyMrk == -1)

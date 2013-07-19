@@ -4,7 +4,7 @@ Version 7.4.3  [v7.4-stable] 2013-07-18
   The queue high, low and discard watermarks needed to be set explicitely
   when the queue size was modified. Otherwise, the queue run with fixed
   absolute values, which were almost always unsuitable. Most often, they
-  were far to low and lead to making a DA queue go to disk far too early.
+  were far too low and lead to making a DA queue go to disk far too early.
   In this case, the rest ot the memory queue size was still utilized, which
   was probably a main reason why this usually had no bad effect (if a
   queue needs to go to disk, performance of the queue drop significanly
