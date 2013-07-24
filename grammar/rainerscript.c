@@ -1517,13 +1517,15 @@ evalStrArrayCmp(es_str_t *estr_l, struct cnfarray* ar, int cmpop)
 	int i;
 	int r = 0;
 	es_str_t **res;
-	if(cmpop == CMP_EQ) {
+
+/*	if(cmpop == CMP_EQ) {
 		res = bsearch(&estr_l, ar->arr, ar->nmemb, sizeof(es_str_t*), qs_arrcmp);
 		r = res != NULL;
+
 	} else if(cmpop == CMP_NE) {
 		res = bsearch(&estr_l, ar->arr, ar->nmemb, sizeof(es_str_t*), qs_arrcmp);
 		r = res == NULL;
-	} else {
+	} else */ {
 		for(i = 0 ; (r == 0) && (i < ar->nmemb) ; ++i) {
 			switch(cmpop) {
 			case CMP_STARTSWITH:
@@ -1538,8 +1540,23 @@ evalStrArrayCmp(es_str_t *estr_l, struct cnfarray* ar, int cmpop)
 			case CMP_CONTAINSI:
 				r = es_strCaseContains(estr_l, ar->arr[i]) != -1;
 				break;
+			case CMP_EQ:
+			case CMP_NE:
+				r = es_strcmp(estr_l, ar->arr[i]) == 0; 
+				break;
 			}
 		}
+	}
+finalize_it:
+	/* Double reverse logic, so we can use the same array for-loop */ 
+	if (cmpop == CMP_NE) {
+		if (r == 1) { r = 0; } else { r = 1; }
+	}
+	if(Debug) {/* DEBUG Code: Can be removed later*/
+		char *psztmp;
+		psztmp = es_str2cstr(estr_l, NULL);
+		dbgprintf("rainerscript: evalStrArrayCmp cmpop='%s' i='%d' res='%d'\n", tokenToString(cmpop), i, r);
+		free(psztmp);
 	}
 	return r;
 }
